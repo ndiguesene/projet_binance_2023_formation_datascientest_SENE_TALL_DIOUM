@@ -1,3 +1,0 @@
-python-binance
-elasticsearch
-mysql-connector-python
