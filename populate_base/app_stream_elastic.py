@@ -12,3 +12,4 @@ client = Client(api_key=api_key, api_secret=api_secret, testnet=True)
 data = []
 for marche in client.get_all_tickers():
     data.append(tuple(client.get_ticker(symbol=marche.get("symbol")).values()))
+

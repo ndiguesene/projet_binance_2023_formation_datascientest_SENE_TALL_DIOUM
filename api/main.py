@@ -18,6 +18,7 @@ app = FastAPI(
     contact={}
 )
 
+
 class MarcheSchema(BaseModel):
     id: int
     date_time: str
@@ -65,9 +66,11 @@ def ResponseModel(data, message):
 def ErrorResponseModel(error, code, message):
     return {"error": error, "code": code, "message": message}
 
+
 @app.get("/")
 async def root():
     return ResponseModel("message", "Hello World")
+
 
 # @validate
 # Get all marches
@@ -78,6 +81,7 @@ async def get_marches():
     result = cursor.fetchall()
     return ResponseModel(result, "All marches received.")
 
+
 # Get an marche by symbol
 @app.get("/marche/{symbol}")
 async def get_marche(symbol: str):
@@ -85,6 +89,7 @@ async def get_marche(symbol: str):
     cursor.execute(f"SELECT * FROM cryptobot.botmarche WHERE symbol = '{symbol}'")
     result = cursor.fetchone()
     return ResponseModel(result, f"symbol = {symbol} received.")
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", port=8000, log_level="info")
