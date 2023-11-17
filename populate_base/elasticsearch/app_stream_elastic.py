@@ -5,10 +5,6 @@ from elasticsearch import Elasticsearch
 
 from constant import api_key, api_secret, URL_ELASTIC, INDEX_ELASTIC
 
-# init
-# api_key = '7FipgVGJTbxWEyeyI5wNRyKuQwXXJcRIJBZvvQAxRY1aScVExHzdyQFMh3bLLPT5'
-# api_secret = 'tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1'
-
 client = Client(api_key=api_key, api_secret=api_secret, testnet=True)
 
 data = []
