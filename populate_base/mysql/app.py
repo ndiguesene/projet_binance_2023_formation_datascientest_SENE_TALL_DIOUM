@@ -34,8 +34,7 @@ try:
         db_Info = connection.get_server_info()
         print("Connected to MySQL Server version ", db_Info)
         cursor = connection.cursor()
-        cursor.execute("DROP DATABASE {}".format(BDNAME_MYSQL))
-        cursor.execute("CREATE DATABASE {}".format(BDNAME_MYSQL))
+        cursor.execute("CREATE DATABASE IF NOT EXISTS {}".format(BDNAME_MYSQL))
         cursor.execute("DROP TABLE IF EXISTS {}.{}".format(BDNAME_MYSQL, TABLENAME_MYSQL))
         cursor.execute(
             "CREATE TABLE cryptobot.botmarche (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, date_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, "
