@@ -3,9 +3,11 @@
 from binance.client import Client
 from elasticsearch import Elasticsearch
 
+from constant import api_key, api_secret, URL_ELASTIC, INDEX_ELASTIC
+
 # init
-api_key = '7FipgVGJTbxWEyeyI5wNRyKuQwXXJcRIJBZvvQAxRY1aScVExHzdyQFMh3bLLPT5'
-api_secret = 'tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1'
+# api_key = '7FipgVGJTbxWEyeyI5wNRyKuQwXXJcRIJBZvvQAxRY1aScVExHzdyQFMh3bLLPT5'
+# api_secret = 'tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1'
 
 client = Client(api_key=api_key, api_secret=api_secret, testnet=True)
 
@@ -18,12 +20,12 @@ for marche in client.get_all_tickers():
 #        break
 #    i = i + 1
 
-es = Elasticsearch("http://54.195.84.110:9200")
+es = Elasticsearch(URL_ELASTIC)
 
 # print(es.info())
 
 # print(es.indices.(index='test-index', ignore=[400, 404]).body)
 # print(es.indices.delete(index='reviews_new', ignore=[400, 404]).body)
-print(es.index(index="cryptobot", document=data).body)
+print(es.index(index=INDEX_ELASTIC, document=data).body)
 print(es.indices.get(index="*"))
 print("OK.")
