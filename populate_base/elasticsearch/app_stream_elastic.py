@@ -1,21 +1,12 @@
 # installation du package python-binance
 # pip install python-binance
-from binance.client import Client
 from elasticsearch import Elasticsearch
 
-from constant import api_key, api_secret, URL_ELASTIC, INDEX_ELASTIC
+from constant import URL_ELASTIC, INDEX_ELASTIC, get_historic_by_symbol
 
-client = Client(api_key=api_key, api_secret=api_secret, testnet=True)
-
-data = []
-# i = 0
-for marche in client.get_all_tickers():
-    data.append(tuple(client.get_ticker(symbol=marche.get("symbol")).values()))
-    # Tester à indexer quelques lignes
-#    if (i == 1):
-#        break
-#    i = i + 1
-
+data = get_historic_by_symbol(0)
+print("Données finales")
+print(data)
 es = Elasticsearch(URL_ELASTIC)
 
 # print(es.info())
