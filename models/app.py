@@ -2,30 +2,29 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn import metrics
 
+
 # Fonction pour obtenir des données historiques à partir de CSV
-def get_data_historical(fileName):
+def get_data_historical(fileName, sep):
     import pandas as pd
-    df = pd.read_csv(fileName)
+    df = pd.read_csv(fileName, sep=sep)
     return df
 
 
 # Fonction pour générer des caractéristiques simples pour la démonstration
 def generate_features(df):
     df['price_variation'] = df['close_price'].pct_change()
-    df['target'] = (df['price_variation'] > 0).astype(int)
+    df['target'] = (df['price_variation'] >= 0).astype(int)
     return df.dropna()
 
-
-
+symbol = "ETHBTC"
 # Charger les données historiques pour le symbole BTC/USDT
-symbol = 'BTC/USDT'
-data = get_data_historical("./botmarche_new.csv")
-data = get_data_historical("./botmarche_new.csv")
-data = data[data['symbol'] == 'ETHBTC']
-data = generate_features(data)
+data = get_data_historical("./../botmarche.csv", sep=",")
+data = data[data['symbol'] == symbol]
+dataFeatures = generate_features(data)
+print(dataFeatures)
 
 # Diviser les données en ensembles d'entraînement et de test
-train_data, test_data = train_test_split(data, test_size=0.2, shuffle=False)
+train_data, test_data = train_test_split(dataFeatures, test_size=0.2, shuffle=False)
 
 # Séparer les caractéristiques et les cibles
 features = ['open_price', 'high_price', 'low_price', 'close_price', 'volume']
