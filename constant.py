@@ -23,6 +23,12 @@ PASSWORD_MYSQL = "Password"
 client = Client(api_key=api_key, api_secret=api_secret, testnet=True)
 
 
+def get_data_historical_from_csv_file(fileName):
+    import pandas as pd
+    df = pd.read_csv(fileName)
+    return df
+
+
 def get_data_from_marche(client, marche):
     return tuple(client.get_ticker(symbol=marche).values())
 
