@@ -1,14 +1,16 @@
-FROM tiangolo/uvicorn-gunicorn:python3.8-slim
-  
-LABEL maintainer="Orange DE Infarctus 2"
+FROM python:3.9
 
-WORKDIR /app
+LABEL maintainer="Orange DE OPA Crypto"
+
+WORKDIR /api
 
 ADD requirements.txt .
 
-RUN pip3 install -r requirements.txt \
-    && rm -rf /root/.cache
+RUN pip3 install -r requirements.txt && rm -rf /root/.cache
 
 COPY . .
 
-CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
+EXPOSE 8000
+
+# Command to run the API program
+CMD python3 api.py

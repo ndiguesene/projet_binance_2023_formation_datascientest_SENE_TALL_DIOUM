@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: 'cryptobot'
+      MYSQL_PASSWORD: 'root'
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+
+  app_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      MYSQL_HOST: 'db'
+      MYSQL_DB: 'cryptobot'
+      MYSQL_USER: 'root'
+      MYSQL_PASSWORD: 'root'
+
+volumes:
+  dbdata:

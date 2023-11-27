@@ -1,3 +1,3 @@
-python-binance
-elasticsearch
-mysql-connector-python
+python-binance==1.0.19
+mysql.connector-python==8.2.0
+mysql.connector==2.2.9
