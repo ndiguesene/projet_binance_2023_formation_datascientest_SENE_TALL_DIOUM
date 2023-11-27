@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+        mongodb:
+                image: mongo
+                container_name: mongodb
+                environment:
+                        - MONGO_INITDB_ROOT_USERNAME=root
+                        - MONGO_INITDB_ROOT_PASSWORD=root
+                volumes:
+                        - mongodb-data:/data/db
+                networks:
+                        - mongodb_network
+                ports:
+                        - 27017:27017
+        populate:
+                image: projet3-de/populate:0.0.1
+                container_name: populate_db
+                depends_on:
+                         - mongodb
+                networks:
+                        - mongodb_network
+        api:
+                image: projet3-de/api:0.0.1
+                container_name: query_db
+                depends_on:
+                         - populate
+                networks:
+                        - mongodb_network
+                ports:
+                        - "8000:8000"
+networks:
+        mongodb_network: 
+                name: mongo_net
+volumes:
+        mongodb-data:
+                name: mongodb-data
