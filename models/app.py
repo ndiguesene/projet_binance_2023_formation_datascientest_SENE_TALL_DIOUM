@@ -1,4 +1,5 @@
 import pandas as pd
+from joblib import dump
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
@@ -17,7 +18,8 @@ def get_all_symbols(client):
     return data
 
 
-def create_logistic_regression_model(data):
+def create_logistic_regression_model(link="../botmarche_ok.csv"):
+    data = get_data_historical(link, sep=",")
     # Identification de la variable de temps
     data['timestamp'] = data['kline_close_time_parsed']
     data['moyennemobile10'] = data['close_price'].rolling(window=10).mean()
@@ -43,8 +45,11 @@ def create_logistic_regression_model(data):
     accuracy = accuracy_score(y_test, predictions)
     print(f'Précision du modèle : {accuracy}')
 
+    dump(model, "./opa_cypto_model_rl.joblib")
 
-def create_random_forest_model(data):
+
+def create_random_forest_model(link="../botmarche_ok.csv"):
+    data = get_data_historical(link, sep=",")
     # Identification de la variable de temps
     data['timestamp'] = data['kline_close_time_parsed']
     # La moyenne mobile sur une fenêtre de 10 périodes pour la colonne 'close_price'
@@ -77,10 +82,10 @@ def create_random_forest_model(data):
 
     # Faire des prédictions sur l'ensemble de test
     # predictions = model.predict(X_test)
-    # dump(model, "./opa_cypto_model_lr.joblib")
+    dump(model, "./opa_cypto_model_rf.joblib")
+    return {"score": str(accuracy)}
 
 
-data = get_data_historical("../botmarche_ok.csv", sep=",")
-
-create_random_forest_model(data)
-create_logistic_regression_model(data)
+if __name__ == "__main__":
+    create_random_forest_model(link="../botmarche_ok.csv")
+    # create_logistic_regression_model(data)
