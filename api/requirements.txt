@@ -5,3 +5,4 @@ requests==2.31.0
 werkzeug==3.0.1
 mysql.connector-python==8.2.0
 mysql.connector==2.2.9
+flask==3.0.0

@@ -1,3 +1,5 @@
+from flask import Flask
+
 description = """ This API helps you query data from a MySQL database.
 The data are available from the Binance API
 
@@ -7,19 +9,19 @@ The data are available from the Binance API
 """
 
 import mysql.connector
-from fastapi import FastAPI
 from pydantic import BaseModel
 
 from constant import BDNAME_MYSQL, TABLENAME_MYSQL, USER_MYSQL, PASSWORD_MYSQL, \
     HOST_MYSQL, \
     PORT_MYSQL
 
-app = FastAPI(
-    title='Projet OPA Crypto API',
-    description=description,
-    version="0.0.1",
-    contact={}
-)
+# app = FastAPI(
+#     title='Projet OPA Crypto API',
+#     description=description,
+#     version="0.0.1",
+#     contact={}
+# )
+app = Flask(__name__)
 
 
 class MarcheSchema(BaseModel):
@@ -59,14 +61,14 @@ def ErrorResponseModel(error, code, message):
 
 
 @app.get("/")
-async def root():
+def root():
     return ResponseModel("message", "Hello World")
 
 
 # @validate
 # Get all marches
 @app.get("/marches")
-async def get_marches():
+def get_marches():
     cursor = mydb.cursor()
     cursor.execute("SELECT * FROM {}.{}".format(BDNAME_MYSQL, TABLENAME_MYSQL))
     result = cursor.fetchall()
@@ -75,15 +77,12 @@ async def get_marches():
 
 # Get an marche by symbol
 @app.get("/marche/{symbol}")
-async def get_marche(symbol: str):
+def get_marche(symbol: str):
     cursor = mydb.cursor()
     cursor.execute("SELECT * FROM {}.{} WHERE symbol = '{}'".format(BDNAME_MYSQL, TABLENAME_MYSQL, symbol))
     result = cursor.fetchone()
     return ResponseModel(result, f"symbol = {symbol} received.")
 
-
-# if __name__ == "__main__":
-#     uvicorn.run("main:app", port=8000, log_level="info")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
