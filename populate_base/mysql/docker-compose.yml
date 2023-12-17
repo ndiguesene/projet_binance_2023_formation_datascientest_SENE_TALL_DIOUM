@@ -22,10 +22,14 @@ services:
     depends_on:
       - db
     environment:
-      #MYSQL_HOST: 'localhost'
+      MYSQL_HOST: 'db'
       MYSQL_DATABASE: 'cryptobot'
       MYSQL_USER: 'root'
       MYSQL_PASSWORD: 'root'
+      MYSQL_PORT: "3306"
+      MYSQL_TABLENAME: "botmarche"
+      api_key: '7FipgVGJTbxWEyeyI5wNRyKuQwXXJcRIJBZvvQAxRY1aScVExHzdyQFMh3bLLPT5'
+      api_secret: 'tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1'
 
 volumes:
   mysql_data:
