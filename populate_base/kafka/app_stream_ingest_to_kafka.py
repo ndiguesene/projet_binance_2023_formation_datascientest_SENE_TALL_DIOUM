@@ -1,8 +1,8 @@
+import json
 import os
 
 from binance.client import Client
 from confluent_kafka import Producer
-import json
 
 # Configuration de l'API Binance en récuparant les variables d'enrivonnement
 api_key = os.getenv("api_key")
@@ -18,6 +18,13 @@ producer = Producer({
 })
 
 
+def get_all_symbols(client):
+    data = []
+    for marche in client.get_all_tickers():
+        data.append(marche.get("symbol"))
+    return data
+
+
 def delivery_report(err, msg):
     if err is not None:
         print(f'Échec de la livraison du message : {err}')
@@ -26,19 +33,20 @@ def delivery_report(err, msg):
 
 
 # Récupération des données en temps réel depuis Binance et publication dans Kafka
-def fetch_and_publish(symbol):
+def fetch_and_publish(symbols):
     while True:
         try:
-            klines = client.get_klines(symbol=symbol, interval=Client.KLINE_INTERVAL_1MINUTE)
-            print("TEST OK " + str(symbol))
-            for kline in klines:
-                # Publier chaque kline dans le topic Kafka
-                print(kline)
-                producer.produce(topic_name, json.dumps(kline).encode('utf-8'), callback=delivery_report)
-            producer.flush()
+            for symbol in symbols:
+                klines = client.get_klines(symbol=symbol, interval=Client.KLINE_INTERVAL_1MINUTE)
+                for kline in klines:
+                    # Publier chaque kline dans le topic Kafka
+                    producer.produce(topic_name, json.dumps(kline).encode('utf-8'), callback=delivery_report)
+                producer.flush()
         except Exception as e:
             print(f"Erreur lors de la récupération des données depuis Binance : {e}")
 
 
 # Appel de la fonction pour récupérer et publier les données pour un symbole spécifique (par exemple, 'BTCUSDT')
-fetch_and_publish('ETHBTC')
+allSymbols = get_all_symbols(client)
+# fetch_and_publish('ETHBTC')
+fetch_and_publish(allSymbols)
