@@ -1,0 +1,49 @@
+version: "3.9"
+services:
+  db:
+    image: mysql
+    container_name: mysqldb
+    environment:
+      MYSQL_HOST: 'db'
+      MYSQL_DATABASE: 'cryptobot'
+      MYSQL_PASSWORD: 'root'
+      MYSQL_ROOT_PASSWORD: 'root'
+    volumes:
+      - mysql-data:/data/db
+    networks:
+      - mysql_network
+    ports:
+      - "3306:3306"
+  populate_into_mysql:
+    image: populate_into_mysql:0.0.1
+    container_name: populate_db_mysql
+    depends_on:
+      - db
+    networks:
+      - mysql_network
+  api:
+    image: api:0.0.1
+    container_name: api_flask
+    depends_on:
+      - populate_into_mysql
+    networks:
+      - mysql_network
+    ports:
+      - "8000:8000"
+  api_model:
+    image: api_model:0.0.1
+    container_name: api_flask_model
+    depends_on:
+      - populate_into_mysql
+    networks:
+      - mysql_network
+    ports:
+      - "9000:9000"
+
+
+networks:
+  mysql_network:
+    name: mysql_net
+volumes:
+  mysql-data:
+    name: mysql-data

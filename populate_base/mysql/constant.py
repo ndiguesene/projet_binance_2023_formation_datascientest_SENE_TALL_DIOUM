@@ -1,0 +1,4 @@
+# ELASTIC
+# URL_ELASTIC = "http://54.195.84.110:9200"
+URL_ELASTIC = "http://54.195.84.110:9200"
+INDEX_ELASTIC = "cryptobot"
