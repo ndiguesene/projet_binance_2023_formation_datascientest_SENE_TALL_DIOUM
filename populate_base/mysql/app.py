@@ -21,20 +21,17 @@ client = Client(api_key=api_key, api_secret=api_secret, testnet=True)
 def get_data_from_marche(client, marche):
     return tuple(client.get_ticker(symbol=marche).values())
 
-
 def get_all_marche_statistic(client):
     data = []
     for marche in client.get_all_tickers():
         data.append(get_data_from_marche(client=client, marche=marche.get("symbol")))
     return data
 
-
 def get_all_symbols(client):
     data = []
     for marche in client.get_all_tickers():
         data.append(marche.get("symbol"))
     return data
-
 
 def check_mysql_connection_and_get_current_connexion():
     max_attempts = 30

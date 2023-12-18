@@ -1,7 +1,6 @@
-import json
-
 from confluent_kafka import Consumer, KafkaException
 from elasticsearch import Elasticsearch
+import json
 
 from constant import INDEX_ELASTIC
 
