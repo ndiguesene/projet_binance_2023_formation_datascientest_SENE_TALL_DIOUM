@@ -9,7 +9,7 @@ COPY app.py .
 COPY constant.py .
 COPY server.py .
 
-RUN pip3 install -r requirements.txt && rm -rf /root/.cache
+RUN pip3 install -r requirements.txt && pip3 install mysql-connector-python && pip3 install python-binance && rm -rf /root/.cache
 
 EXPOSE 9000
 

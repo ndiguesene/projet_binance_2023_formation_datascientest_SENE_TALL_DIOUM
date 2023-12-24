@@ -1,20 +1,12 @@
-#docker-compose down
+cd ./populate_base/mysql
+docker image build . -t projet_final/populate_into_mysql:0.0.1
 
-#docker container stop mysqldb
-#docker container rm mysqldb
-#
-#docker container stop populate_db_mysql
-#docker container rm populate_db_mysql
+cd ./../../api/
+docker image build . -t projet_final/api:0.0.1
 
-#docker image rm mysql
-#docker image rm populate_into_mysql
+cd ./../models/
+docker image build . -t projet_final/model:0.0.1
 
-cd ./populate_base
-docker image build . -t populate_into_mysql:0.0.1
-
-cd ./../api/
-docker image build . -t api:0.0.1
-
-cd ./../up
+cd ../up
 
 docker-compose up -d

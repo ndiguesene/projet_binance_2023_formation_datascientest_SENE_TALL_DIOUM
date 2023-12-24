@@ -27,24 +27,50 @@ def get_all_symbols(client):
     return data
 
 
-mydb = mysql.connector.connect(host=HOST_MYSQL,
-                               port=PORT_MYSQL,
-                               database=BDNAME_MYSQL,
-                               user=USER_MYSQL,
-                               password=PASSWORD_MYSQL)
+# mydb = mysql.connector.connect(host=HOST_MYSQL,
+#                                port=PORT_MYSQL,
+#                                database=BDNAME_MYSQL,
+#                                user=USER_MYSQL,
+#                                password=PASSWORD_MYSQL)
 
 
 def getBaseFromMysql():
     # cursor = mydb.cursor()
     # cursor.execute("SELECT * FROM {}.{}".format(BDNAME_MYSQL, TABLENAME_MYSQL))
     # result = cursor.fetchall()
-    data_frame = pd.read_sql("SELECT * FROM {}.{}".format(BDNAME_MYSQL, TABLENAME_MYSQL), mydb)
+    max_attempts = 30
+    attempts = 0
+    connected = False
+    # Cette partie permet d'etre sur que le mysql est ready, parce que
+    # Docker ne garantit pas nécessairement l'ordre de démarrage des services, ce qui peut entraîner le démarrage de votre service Python (app) avant que le service de la base de données MySQL (db)
+    # ne soit prêt
+    import time
+    connection = None
 
-    # columns = [i[0] for i in cursor.description]
-    # print(columns)
-    # data_frame = pd.DataFrame(result, columns=columns)
+    while not connected and attempts < max_attempts:
+        try:
+            connection = mysql.connector.connect(host=HOST_MYSQL,
+                                                 port=PORT_MYSQL,
+                                                 database=BDNAME_MYSQL,
+                                                 user=USER_MYSQL,
+                                                 password=PASSWORD_MYSQL)
+            connected = True
+            # connection.close()
+            print("MySQL is ready!")
+        except mysql.connector.Error as err:
+            print(f"Attempt {attempts + 1}: MySQL is not ready yet - Error: {err}")
+            attempts += 1
+            time.sleep(10)
+
+    mycursor = connection.cursor()
+    mycursor.execute("SELECT * FROM {}.{} limit 10".format(BDNAME_MYSQL, TABLENAME_MYSQL))
+    myresult = mycursor.fetchall()
+
+    data_frame = pd.DataFrame(myresult, columns=[i[0] for i in mycursor.description])
+
+    # print(data_frame.columns)
     # print(data_frame)
-    mydb.close()
+    connection.close()
     return data_frame
 
 
@@ -144,7 +170,8 @@ def create_random_forest_model(link="../botmarche_ok.csv"):
 
 def create_random_forest_model():
     data = getBaseFromMysql()
-    print(data.columns)
+    # print(data.columns)
+    # print(data)
     data['timestamp'] = pd.to_datetime(data['kline_close_time_parsed']).astype(int) / 10 ** 9
 
     # La moyenne mobile sur une fenêtre de 10 périodes pour la colonne 'close_price'
@@ -160,15 +187,14 @@ def create_random_forest_model():
     # Séparer les données en features et target
     X = data[['open_price', 'high_price', 'low_price', 'volume', 'moyennemobile10', 'timestamp']]
     y = data['prediction']
-    symbol = data['symbol']
+    # symbol = data['symbol']
 
-    label_encoder = LabelEncoder()
-    y = label_encoder.fit_transform(y)
-    symbol = label_encoder.fit_transform(symbol)
+    # label_encoder = LabelEncoder()
+    # y = label_encoder.fit_transform(y)
+    # symbol = label_encoder.fit_transform(symbol)
 
     # Diviser les données en ensembles d'entraînement et de test
-    X_train, X_test, y_train, y_test, symbol_train, symbol_test = train_test_split(X, y, symbol, test_size=0.2,
-                                                                                   random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     model = RandomForestClassifier(n_estimators=100, random_state=33)
 
     # Entraîner le modèle
@@ -199,5 +225,6 @@ def create_random_forest_model():
     dump(model, "./opa_cypto_model_rf.joblib")
     return {"score": str(accuracy)}
 
-# if __name__ == "__main__":
-#    create_random_forest_model()
+
+if __name__ == "__main__":
+    create_random_forest_model()

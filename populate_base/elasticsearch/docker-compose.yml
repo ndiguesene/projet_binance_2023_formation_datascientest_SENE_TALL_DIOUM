@@ -5,10 +5,11 @@ services:
     container_name: es-container
     image: docker.elastic.co/elasticsearch/elasticsearch:8.1.2
     environment:
-      #api_key: '7FipgVGJTbxWEyeyI5wNRyKuQwXXJcRIJBZvvQAxRY1aScVExHzdyQFMh3bLLPT5'
-      #api_secret: 'tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1'
       - xpack.security.enabled=false
       - "discovery.type=single-node"
+      - api_key = "7FipgVGJTbxWEyeyI5wNRyKuQwXXJcRIJBZvvQAxRY1aScVExHzdyQFMh3bLLPT5"
+      - api_secret = 'tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1'
+      - URL_ELASTIC = 'http://elasticsearch:9200'
     networks:
       - es-net
     ports:

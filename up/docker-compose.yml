@@ -1,49 +1,57 @@
 version: "3.9"
 services:
   db:
-    image: mysql
-    container_name: mysqldb
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: 'cryptobot'
+      MYSQL_PASSWORD: 'root'
+      MYSQL_ALLOW_EMPTY_PASSWORD: true
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/data/db
+    networks:
+      - db_network
+  populate_into_mysql:
+    image: projet_final/populate_into_mysql:0.0.1
+    container_name: populate_into_mysql
+    depends_on:
+      - db
     environment:
       MYSQL_HOST: 'db'
       MYSQL_DATABASE: 'cryptobot'
+      MYSQL_USER: 'root'
       MYSQL_PASSWORD: 'root'
+      MYSQL_PORT: "3306"
       MYSQL_ROOT_PASSWORD: 'root'
-    volumes:
-      - mysql-data:/data/db
+      MYSQL_TABLENAME: "botmarche"
+      api_key: '7FipgVGJTbxWEyeyI5wNRyKuQwXXJcRIJBZvvQAxRY1aScVExHzdyQFMh3bLLPT5'
+      api_secret: 'tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1'
     networks:
-      - mysql_network
-    ports:
-      - "3306:3306"
-  populate_into_mysql:
-    image: populate_into_mysql:0.0.1
-    container_name: populate_db_mysql
-    depends_on:
-      - db
-    networks:
-      - mysql_network
+      - db_network
   api:
-    image: api:0.0.1
-    container_name: api_flask
+    image: projet_final/api:0.0.1
+    container_name: api
     depends_on:
       - populate_into_mysql
-    networks:
-      - mysql_network
     ports:
       - "8000:8000"
-  api_model:
-    image: api_model:0.0.1
-    container_name: api_flask_model
-    depends_on:
-      - populate_into_mysql
     networks:
-      - mysql_network
+      - db_network
+  model:
+    image: projet_final/model:0.0.1
+    container_name: model
+    depends_on:
+      - db
     ports:
       - "9000:9000"
-
-
+    networks:
+      - db_network
 networks:
-  mysql_network:
+  db_network:
     name: mysql_net
 volumes:
-  mysql-data:
+  db-data:
     name: mysql-data

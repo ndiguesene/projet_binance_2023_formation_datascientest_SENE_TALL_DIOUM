@@ -37,7 +37,7 @@ def fetch_and_publish(symbols):
     while True:
         try:
             for symbol in symbols:
-                klines = client.get_klines(symbol=symbol, interval=Client.KLINE_INTERVAL_1MINUTE)
+                klines = client.get_klines(symbol=symbol, interval=Client.KLINE_INTERVAL_1HOUR)
                 for kline in klines:
                     # Publier chaque kline dans le topic Kafka
                     producer.produce(topic_name, json.dumps(kline).encode('utf-8'), callback=delivery_report)

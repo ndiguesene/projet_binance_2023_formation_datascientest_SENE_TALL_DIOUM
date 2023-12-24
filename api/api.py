@@ -47,6 +47,31 @@ mydb = mysql.connector.connect(host=HOST_MYSQL,
                                user=USER_MYSQL,
                                password=PASSWORD_MYSQL)
 
+max_attempts = 30
+attempts = 0
+connected = False
+# Cette partie permet d'etre sur que le mysql est ready, parce que
+# Docker ne garantit pas nécessairement l'ordre de démarrage des services, ce qui peut entraîner le démarrage de votre service Python (app) avant que le service de la base de données MySQL (db)
+# ne soit prêt
+import time
+
+connection = None
+
+while not connected and attempts < max_attempts:
+    try:
+        mydb = mysql.connector.connect(host=HOST_MYSQL,
+                                       port=PORT_MYSQL,
+                                       database=BDNAME_MYSQL,
+                                       user=USER_MYSQL,
+                                       password=PASSWORD_MYSQL)
+        connected = True
+        # connection.close()
+        print("MySQL is ready!")
+    except mysql.connector.Error as err:
+        print(f"Attempt {attempts + 1}: MySQL is not ready yet - Error: {err}")
+        attempts += 1
+        time.sleep(10)
+
 
 def ResponseModel(data, message):
     return {
