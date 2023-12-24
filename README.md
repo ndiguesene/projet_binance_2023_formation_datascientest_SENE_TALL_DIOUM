@@ -26,7 +26,6 @@ suivant:
 ### API Binance
 
 ## Choix des base de données
-
 2 base de données sont utilisées dans le cadre ce projet, MySQL et ElasticSearch
 
 - La base MySQL nous permettra de la peupler à partir des données historique de Binance a des fins d'entrainement de
