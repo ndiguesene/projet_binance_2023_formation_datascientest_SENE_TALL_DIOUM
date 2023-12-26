@@ -57,9 +57,9 @@ def predict_rf_score():
     X = pd.DataFrame(mydata)
 
     prediction = model_rf.predict(X).tolist()
-    proba = model_rf.predict_proba(X).tolist()
-    log_proba = model_rf.predict_log_proba(X).tolist()
-    return {"prediction": prediction, "proba": proba, "log_proba": log_proba}
+    # proba = model_rf.predict_proba(X).tolist()
+    # log_proba = model_rf.predict_log_proba(X).tolist()
+    return {"prediction": prediction}
 
 
 app.run(host="0.0.0.0", port=9000)

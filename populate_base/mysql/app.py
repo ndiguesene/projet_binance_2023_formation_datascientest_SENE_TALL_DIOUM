@@ -78,8 +78,7 @@ end_timestamp = int(end_date.timestamp() * 1000)
 data = []
 print("LOG TO GET ALL MARCHES")
 # allSymbols = get_all_symbols(client)
-allSymbols = ["ETHBTC"]
-print("nombre de marches " + str(len(allSymbols)))
+allSymbols = ["BTCUSDT"]
 # Fetch historical prices using Binance API
 for symbol in allSymbols:
     print(symbol)
@@ -94,8 +93,6 @@ for symbol in allSymbols:
         price_data = price_data[:-3]
         price_data.extend([timestampOpen, timestampClose, symbol])  # Ajouter les 3 éléments parsed
         data.append(price_data)
-
-print("sorti de boucle")
 
 connection = check_mysql_connection_and_get_current_connexion()
 
@@ -117,7 +114,6 @@ cursor.execute(
                            "kline_open_time_parsed DATETIME,"
                            "kline_close_time_parsed DATETIME,"
                            "symbol VARCHAR(20))")
-print("ok")
 
 sql = """INSERT INTO {}.{}(open_price, high_price, low_price,close_price,""" \
       """volume, quote_asset_volume, number_of_trades, """ \

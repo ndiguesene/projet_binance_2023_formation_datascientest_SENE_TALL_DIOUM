@@ -15,14 +15,7 @@ from constant import BDNAME_MYSQL, TABLENAME_MYSQL, USER_MYSQL, PASSWORD_MYSQL, 
     HOST_MYSQL, \
     PORT_MYSQL
 
-# app = FastAPI(
-#     title='Projet OPA Crypto API',
-#     description=description,
-#     version="0.0.1",
-#     contact={}
-# )
 app = Flask(__name__)
-
 
 class MarcheSchema(BaseModel):
     id: int
@@ -38,21 +31,28 @@ class MarcheSchema(BaseModel):
     symbol: str
 
 
-######
-## Database info
-########
-mydb = mysql.connector.connect(host=HOST_MYSQL,
-                               port=PORT_MYSQL,
-                               database=BDNAME_MYSQL,
-                               user=USER_MYSQL,
-                               password=PASSWORD_MYSQL)
+def symbol_helper(symbol) -> dict:
+    return {
+        "id": int(symbol["id"]),
+        "open_price": float(symbol["open_price"]),
+        "high_price": float(symbol["high_price"]),
+        "low_price": float(symbol["low_price"]),
+        "close_price": float(symbol["close_price"]),
+        "volume": float(symbol["volume"]),
+        "quote_asset_volume": str(symbol["quote_asset_volume"]),
+        "number_of_trades": str(symbol["number_of_trades"]),
+        "kline_open_time_parsed": str(symbol["kline_open_time_parsed"]),
+        "kline_close_time_parsed": str(symbol["kline_close_time_parsed"]),
+        "symbol": str(symbol["symbol"])
+    }
+
 
 max_attempts = 30
 attempts = 0
 connected = False
 # Cette partie permet d'etre sur que le mysql est ready, parce que
-# Docker ne garantit pas nécessairement l'ordre de démarrage des services, ce qui peut entraîner le démarrage de votre service Python (app) avant que le service de la base de données MySQL (db)
-# ne soit prêt
+# Docker ne garantit pas nécessairement l'ordre de démarrage des services, ce qui peut entraîner le démarrage de votre service Python (app)
+# avant que le service de la base de données MySQL (db) ne soit prêt
 import time
 
 connection = None
@@ -89,24 +89,26 @@ def ErrorResponseModel(error, code, message):
 def root():
     return ResponseModel("message", "Hello World")
 
-
 # @validate
 # Get all marches
-@app.get("/marches")
+@app.get("/symbols")
 def get_marches():
     cursor = mydb.cursor()
-    cursor.execute("SELECT * FROM {}.{}".format(BDNAME_MYSQL, TABLENAME_MYSQL))
+    cursor.execute("SELECT * FROM {}.{} limit 10".format(BDNAME_MYSQL, TABLENAME_MYSQL))
     result = cursor.fetchall()
-    return ResponseModel(result, "All marches received.")
-
+    data = []
+    for res in result:
+        data.append(symbol_helper(res))
+    return ResponseModel(data, "All marches received.")
 
 # Get an marche by symbol
-@app.get("/marche/{symbol}")
+@app.get("/symbol/{symbol}")
 def get_marche(symbol: str):
     cursor = mydb.cursor()
-    cursor.execute("SELECT * FROM {}.{} WHERE symbol = '{}'".format(BDNAME_MYSQL, TABLENAME_MYSQL, symbol))
-    result = cursor.fetchone()
+    cursor.execute("SELECT * FROM {}.{} WHERE symbol = '{}' limit 1".format(BDNAME_MYSQL, TABLENAME_MYSQL, symbol))
+    result = symbol_helper(cursor.fetchone())
     return ResponseModel(result, f"symbol = {symbol} received.")
+
 
 
 if __name__ == '__main__':

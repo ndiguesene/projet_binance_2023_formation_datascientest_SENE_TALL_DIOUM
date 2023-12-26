@@ -55,7 +55,6 @@ def getBaseFromMysql():
                                                  user=USER_MYSQL,
                                                  password=PASSWORD_MYSQL)
             connected = True
-            # connection.close()
             print("MySQL is ready!")
         except mysql.connector.Error as err:
             print(f"Attempt {attempts + 1}: MySQL is not ready yet - Error: {err}")
@@ -170,18 +169,14 @@ def create_random_forest_model(link="../botmarche_ok.csv"):
 
 def create_random_forest_model():
     data = getBaseFromMysql()
-    # print(data.columns)
-    # print(data)
     data['timestamp'] = pd.to_datetime(data['kline_close_time_parsed']).astype(int) / 10 ** 9
 
     # La moyenne mobile sur une fenêtre de 10 périodes pour la colonne 'close_price'
     # (Indicateur Technique dans l'analyse financiere (moyennemobile)
     data['moyennemobile10'] = data['close_price'].rolling(window=10).mean()
     data.loc[data['close_price'] == data['moyennemobile10'], 'prediction'] = 0  # Pas de choix de prédition
-    data.loc[
-        data['close_price'] < data['moyennemobile10'], 'prediction'] = -1  # C'est si le prix dimunera pour la vente
-    data.loc[
-        data['close_price'] > data['moyennemobile10'], 'prediction'] = 1  # C'est si le prix augmentera pour l'achat
+    data.loc[data['close_price'] < data['moyennemobile10'], 'prediction'] = -1  # C'est si le prix dimunera pour la vente
+    data.loc[data['close_price'] > data['moyennemobile10'], 'prediction'] = 1  # C'est si le prix augmentera pour l'achat
     data = data.dropna()
 
     # Séparer les données en features et target
