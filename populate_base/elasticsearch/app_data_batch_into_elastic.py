@@ -37,7 +37,7 @@ end_timestamp = int(end_date.timestamp() * 1000)
 es = Elasticsearch(URL_ELASTIC)  # Port Elasticsearch
 
 # Récupération des données Kline depuis Binance pour un symbole spécifique et une intervalle de 1 heure
-allSymbols = ['BTCUSDT']
+allSymbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "USDCUSDT", "BNBUSDT"]
 # allSymbols = get_all_symbols(client)
 # klines = client.get_klines(symbol=symbol, interval=Client.KLINE_INTERVAL_1HOUR)
 

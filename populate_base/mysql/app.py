@@ -78,7 +78,7 @@ end_timestamp = int(end_date.timestamp() * 1000)
 data = []
 print("LOG TO GET ALL MARCHES")
 # allSymbols = get_all_symbols(client)
-allSymbols = ["BTCUSDT"]
+allSymbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "USDCUSDT", "BNBUSDT"]
 # Fetch historical prices using Binance API
 for symbol in allSymbols:
     print(symbol)
