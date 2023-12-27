@@ -4,34 +4,20 @@ import os
 from binance.client import Client
 from elasticsearch import Elasticsearch
 
-from constant import URL_ELASTIC
-
-
-def get_all_symbols(client):
-    data = []
-    for marche in client.get_all_tickers():
-        data.append(marche.get("symbol"))
-    return data
-
-
 # Configuration de l'API Binance en récuparant les variables d'enrivonnement
 api_key = os.getenv("api_key")
 api_secret = os.getenv("api_secret")
 URL_ELASTIC = os.getenv("URL_ELASTIC")
+
+print(api_key)
+print(api_secret)
+print(URL_ELASTIC)
 
 # api_key = '7FipgVGJTbxWEyeyI5wNRyKuQwXXJcRIJBZvvQAxRY1aScVExHzdyQFMh3bLLPT5'
 # api_secret = 'tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1'
 
 # Initialisation du client Binance
 client = Client(api_key, api_secret)
-
-end_date = datetime.datetime.now()
-# On prends une historique de données de 60 jours glissants
-start_date = end_date - datetime.timedelta(days=30)  # 10 days ago
-
-# Convert dates to milliseconds (required by Binance API)
-start_timestamp = int(start_date.timestamp() * 1000)
-end_timestamp = int(end_date.timestamp() * 1000)
 
 # Configuration de la connexion Elasticsearch
 es = Elasticsearch(URL_ELASTIC)  # Port Elasticsearch

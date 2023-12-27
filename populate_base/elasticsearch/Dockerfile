@@ -6,7 +6,6 @@ RUN mkdir /app_elastic
 
 WORKDIR /app_elastic
 
-COPY constant.py .
 COPY app_data_batch_into_elastic.py .
 
 RUN pip3 install mysql-connector-python && pip3 install python-binance && pip3 install elasticsearch && rm -rf /root/.cache

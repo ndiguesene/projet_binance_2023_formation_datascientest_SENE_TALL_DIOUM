@@ -15,6 +15,16 @@ PASSWORD_MYSQL = os.getenv("MYSQL_PASSWORD")
 HOST_MYSQL = os.getenv("MYSQL_HOST")
 PORT_MYSQL = os.getenv("MYSQL_PORT")
 
+# HOST_MYSQL='localhost'
+# BDNAME_MYSQL= 'cryptobot'
+# USER_MYSQL= 'root'
+# PASSWORD_MYSQL= 'Password'
+# PORT_MYSQL="3306"
+# #PASSWORD_MYSQL: 'root'
+# TABLENAME_MYSQL= "botmarche"
+# api_key= '7FipgVGJTbxWEyeyI5wNRyKuQwXXJcRIJBZvvQAxRY1aScVExHzdyQFMh3bLLPT5'
+# api_secret= 'tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1'
+
 client = Client(api_key=api_key, api_secret=api_secret, testnet=True)
 
 

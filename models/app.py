@@ -1,3 +1,5 @@
+import os
+
 import mysql.connector
 import pandas as pd
 from joblib import dump
@@ -64,7 +66,8 @@ def getBaseFromMysql():
     mycursor = connection.cursor()
     mycursor.execute("SELECT * FROM {}.{} limit 10".format(BDNAME_MYSQL, TABLENAME_MYSQL))
     myresult = mycursor.fetchall()
-
+    print(myresult.count())
+    # mycursor.commit()
     data_frame = pd.DataFrame(myresult, columns=[i[0] for i in mycursor.description])
 
     # print(data_frame.columns)
@@ -168,16 +171,25 @@ def create_random_forest_model(link="../botmarche_ok.csv"):
 
 
 def create_random_forest_model():
-    data = getBaseFromMysql()
+    # data = getBaseFromMysql()
+    data = get_data_historical("/server/botmarche_hourly_ok.csv", sep=",")
+    print("donnees data frame OK")
+    print(data.columns)
+    print("size")
+    print(data.count())
     data['timestamp'] = pd.to_datetime(data['kline_close_time_parsed']).astype(int) / 10 ** 9
 
     # La moyenne mobile sur une fenêtre de 10 périodes pour la colonne 'close_price'
     # (Indicateur Technique dans l'analyse financiere (moyennemobile)
     data['moyennemobile10'] = data['close_price'].rolling(window=10).mean()
     data.loc[data['close_price'] == data['moyennemobile10'], 'prediction'] = 0  # Pas de choix de prédition
-    data.loc[data['close_price'] < data['moyennemobile10'], 'prediction'] = -1  # C'est si le prix dimunera pour la vente
-    data.loc[data['close_price'] > data['moyennemobile10'], 'prediction'] = 1  # C'est si le prix augmentera pour l'achat
+    data.loc[
+        data['close_price'] < data['moyennemobile10'], 'prediction'] = -1  # C'est si le prix dimunera pour la vente
+    data.loc[
+        data['close_price'] > data['moyennemobile10'], 'prediction'] = 1  # C'est si le prix augmentera pour l'achat
     data = data.dropna()
+    print("apres transformation")
+    print(data.columns)
 
     # Séparer les données en features et target
     X = data[['open_price', 'high_price', 'low_price', 'volume', 'moyennemobile10', 'timestamp']]
@@ -217,9 +229,7 @@ def create_random_forest_model():
     #    print(f"N {i + 1}: Prédiction : {predictions[i]} - du Symbol: {market}")
 
     # print(classification_report(y_test, predictions))
-    dump(model, "./opa_cypto_model_rf.joblib")
+    home_path = os.getcwd()
+    print(home_path + "/opa_cypto_model_rf.joblib")
+    dump(model, home_path + "/opa_cypto_model_rf.joblib")
     return {"score": str(accuracy)}
-
-
-if __name__ == "__main__":
-    create_random_forest_model()

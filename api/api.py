@@ -17,6 +17,7 @@ from constant import BDNAME_MYSQL, TABLENAME_MYSQL, USER_MYSQL, PASSWORD_MYSQL, 
 
 app = Flask(__name__)
 
+
 class MarcheSchema(BaseModel):
     id: int
     open_price: float
@@ -33,17 +34,17 @@ class MarcheSchema(BaseModel):
 
 def symbol_helper(symbol) -> dict:
     return {
-        "id": int(symbol["id"]),
-        "open_price": float(symbol["open_price"]),
-        "high_price": float(symbol["high_price"]),
-        "low_price": float(symbol["low_price"]),
-        "close_price": float(symbol["close_price"]),
-        "volume": float(symbol["volume"]),
-        "quote_asset_volume": str(symbol["quote_asset_volume"]),
-        "number_of_trades": str(symbol["number_of_trades"]),
-        "kline_open_time_parsed": str(symbol["kline_open_time_parsed"]),
-        "kline_close_time_parsed": str(symbol["kline_close_time_parsed"]),
-        "symbol": str(symbol["symbol"])
+        "id": str(symbol[0]),
+        "open_price": float(symbol[1]),
+        "high_price": float(symbol[2]),
+        "low_price": float(symbol[3]),
+        "close_price": float(symbol[4]),
+        "volume": float(symbol[5]),
+        "quote_asset_volume": str(symbol[6]),
+        "number_of_trades": str(symbol[7]),
+        "kline_open_time_parsed": str(symbol[8]),
+        "kline_close_time_parsed": str(symbol[9]),
+        "symbol": str(symbol[10])
     }
 
 
@@ -89,6 +90,7 @@ def ErrorResponseModel(error, code, message):
 def root():
     return ResponseModel("message", "Hello World")
 
+
 # @validate
 # Get all marches
 @app.get("/symbols")
@@ -101,14 +103,17 @@ def get_marches():
         data.append(symbol_helper(res))
     return ResponseModel(data, "All marches received.")
 
+
 # Get an marche by symbol
 @app.get("/symbol/{symbol}")
 def get_marche(symbol: str):
     cursor = mydb.cursor()
-    cursor.execute("SELECT * FROM {}.{} WHERE symbol = '{}' limit 1".format(BDNAME_MYSQL, TABLENAME_MYSQL, symbol))
-    result = symbol_helper(cursor.fetchone())
-    return ResponseModel(result, f"symbol = {symbol} received.")
-
+    cursor.execute("SELECT * FROM {}.{} WHERE symbol = '{}'".format(BDNAME_MYSQL, TABLENAME_MYSQL, symbol))
+    result = cursor.fetchall()
+    data = []
+    for res in result:
+        data.append(symbol_helper(res))
+    return ResponseModel(data, f"symbol = {symbol} received.")
 
 
 if __name__ == '__main__':

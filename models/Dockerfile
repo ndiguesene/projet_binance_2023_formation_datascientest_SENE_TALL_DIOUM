@@ -8,6 +8,7 @@ COPY requirements.txt .
 COPY app.py .
 COPY constant.py .
 COPY server.py .
+COPY botmarche_hourly_ok.csv .
 
 RUN pip3 install -r requirements.txt && pip3 install mysql-connector-python && pip3 install python-binance && rm -rf /root/.cache
 

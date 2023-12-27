@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 from fastapi import HTTPException
 from flask import Flask, request
@@ -8,8 +10,9 @@ import app as mdl
 
 
 def get_models():
+    home_path = os.getcwd()
     models = {
-        "model_rf": load("./opa_cypto_model_rf.joblib")
+        "model_rf": load(home_path + "/opa_cypto_model_rf.joblib")
     }
     return models
 
