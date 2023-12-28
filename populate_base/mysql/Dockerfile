@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM ubuntu:20.04
 
 LABEL maintainer="Orange DE OPA Crypto"
 
@@ -9,6 +9,10 @@ WORKDIR /app
 COPY constant.py .
 COPY app.py .
 
-RUN pip3 install mysql-connector-python && pip3 install python-binance && rm -rf /root/.cache
+RUN apt-get update
+RUN apt-get -y install python3-pip
+RUN pip3 install mysql-connector-python
+RUN pip3 install python-binance
+RUN rm -rf /root/.cache
 
 CMD python3 app.py

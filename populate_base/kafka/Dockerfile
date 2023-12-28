@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM ubuntu:20.04
 
 LABEL maintainer="Orange DE OPA Crypto KAFKA"
 
@@ -8,6 +8,6 @@ WORKDIR /app_kafka
 
 COPY app_stream_ingest_to_kafka.py .
 
-RUN pip3 install python-binance && pip3 install confluent_kafka && rm -rf /root/.cache
+RUN pip install python-binance && pip install confluent_kafka && rm -rf /root/.cache
 
 CMD python3 app_stream_ingest_to_kafka.py

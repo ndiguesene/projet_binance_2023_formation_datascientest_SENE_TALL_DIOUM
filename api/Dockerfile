@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM ubuntu:20.04
 
 LABEL maintainer="Orange DE OPA Crypto API"
 
@@ -6,7 +6,7 @@ WORKDIR /api
 
 COPY requirements.txt .
 
-RUN pip3 install -r requirements.txt && rm -rf /root/.cache
+RUN apt-get update && apt-get -y install python3-pip && pip3 install -r requirements.txt && rm -rf /root/.cache
 
 EXPOSE 8000
 
