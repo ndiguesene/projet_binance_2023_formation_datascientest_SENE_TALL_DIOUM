@@ -52,6 +52,7 @@ def predict_rf_score():
     #     "close_price": 0.1638,
     #     "volume": 3.20295,
     #     "moyennemobile10": 1
+    # Ici on doit consommer directement les données qui viennent de ElasticSeach
 
     mydata = request.get_json()
     # load models from disk
@@ -62,7 +63,7 @@ def predict_rf_score():
     prediction = model_rf.predict(X).tolist()
     # proba = model_rf.predict_proba(X).tolist()
     # log_proba = model_rf.predict_log_proba(X).tolist()
-    return {"prediction": prediction}
+    return {"prediction": prediction, "data": mydata}
 
 
 app.run(host="0.0.0.0", port=9000)

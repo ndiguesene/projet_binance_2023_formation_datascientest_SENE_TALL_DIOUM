@@ -9,7 +9,7 @@ from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
-from constant import HOST_MYSQL, PORT_MYSQL, BDNAME_MYSQL, USER_MYSQL, PASSWORD_MYSQL, TABLENAME_MYSQL
+from constant import PORT_MYSQL, BDNAME_MYSQL, USER_MYSQL, TABLENAME_MYSQL, HOST_MYSQL, PASSWORD_MYSQL
 
 
 def get_data_historical(fileName, sep):
@@ -37,9 +37,6 @@ def get_all_symbols(client):
 
 
 def getBaseFromMysql():
-    # cursor = mydb.cursor()
-    # cursor.execute("SELECT * FROM {}.{}".format(BDNAME_MYSQL, TABLENAME_MYSQL))
-    # result = cursor.fetchall()
     max_attempts = 30
     attempts = 0
     connected = False
@@ -64,14 +61,9 @@ def getBaseFromMysql():
             time.sleep(10)
 
     mycursor = connection.cursor()
-    mycursor.execute("SELECT * FROM {}.{} limit 10".format(BDNAME_MYSQL, TABLENAME_MYSQL))
+    mycursor.execute("SELECT * FROM {}.{}".format(BDNAME_MYSQL, TABLENAME_MYSQL))
     myresult = mycursor.fetchall()
-    print(myresult.count())
-    # mycursor.commit()
     data_frame = pd.DataFrame(myresult, columns=[i[0] for i in mycursor.description])
-
-    # print(data_frame.columns)
-    # print(data_frame)
     connection.close()
     return data_frame
 
@@ -171,12 +163,8 @@ def create_random_forest_model(link="../botmarche_ok.csv"):
 
 
 def create_random_forest_model():
-    # data = getBaseFromMysql()
-    data = get_data_historical("/server/botmarche_hourly_ok.csv", sep=",")
-    print("donnees data frame OK")
-    print(data.columns)
-    print("size")
-    print(data.count())
+    data = getBaseFromMysql()
+    # data = get_data_historical("/server/botmarche_hourly_ok.csv", sep=",")
     data['timestamp'] = pd.to_datetime(data['kline_close_time_parsed']).astype(int) / 10 ** 9
 
     # La moyenne mobile sur une fenêtre de 10 périodes pour la colonne 'close_price'
@@ -188,8 +176,6 @@ def create_random_forest_model():
     data.loc[
         data['close_price'] > data['moyennemobile10'], 'prediction'] = 1  # C'est si le prix augmentera pour l'achat
     data = data.dropna()
-    print("apres transformation")
-    print(data.columns)
 
     # Séparer les données en features et target
     X = data[['open_price', 'high_price', 'low_price', 'volume', 'moyennemobile10', 'timestamp']]
@@ -232,4 +218,4 @@ def create_random_forest_model():
     home_path = os.getcwd()
     print(home_path + "/opa_cypto_model_rf.joblib")
     dump(model, home_path + "/opa_cypto_model_rf.joblib")
-    return {"score": str(accuracy)}
+    return {"score_model": str(accuracy), "path_model_joblid": home_path + "/opa_cypto_model_rf.joblib"}
