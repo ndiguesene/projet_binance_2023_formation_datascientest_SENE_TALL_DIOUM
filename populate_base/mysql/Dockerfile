@@ -10,6 +10,7 @@ COPY constant.py .
 COPY app.py .
 
 RUN apt-get update
+RUN apt-get upgrade
 RUN apt-get -y install python3-pip
 RUN pip3 install mysql-connector-python
 RUN pip3 install python-binance

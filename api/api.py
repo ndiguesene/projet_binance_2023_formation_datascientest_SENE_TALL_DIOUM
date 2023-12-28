@@ -1,4 +1,4 @@
-from flask import Flask
+from fastapi import FastAPI
 
 description = """ This API helps you query data from a MySQL database.
 The data are available from the Binance API
@@ -15,7 +15,7 @@ from constant import BDNAME_MYSQL, TABLENAME_MYSQL, USER_MYSQL, PASSWORD_MYSQL, 
     HOST_MYSQL, \
     PORT_MYSQL
 
-app = Flask(__name__)
+app = FastAPI(title='My API Data From MYSQL')
 
 
 class MarcheSchema(BaseModel):
@@ -56,7 +56,7 @@ connected = False
 # avant que le service de la base de données MySQL (db) ne soit prêt
 import time
 
-connection = None
+mydb = None
 
 while not connected and attempts < max_attempts:
     try:
@@ -87,16 +87,16 @@ def ErrorResponseModel(error, code, message):
 
 
 @app.get("/")
-def root():
+async def root():
     return ResponseModel("message", "Hello World")
 
 
 # @validate
 # Get all marches
 @app.get("/symbols")
-def get_marches():
+async def get_marches():
     cursor = mydb.cursor()
-    cursor.execute("SELECT * FROM {}.{} limit 10".format(BDNAME_MYSQL, TABLENAME_MYSQL))
+    cursor.execute("SELECT * FROM {}.{}".format(BDNAME_MYSQL, TABLENAME_MYSQL))
     result = cursor.fetchall()
     data = []
     for res in result:
@@ -106,7 +106,7 @@ def get_marches():
 
 # Get an marche by symbol
 @app.get("/symbol/{symbol}")
-def get_marche(symbol: str):
+async def get_marche(symbol: str):
     cursor = mydb.cursor()
     cursor.execute("SELECT * FROM {}.{} WHERE symbol = '{}'".format(BDNAME_MYSQL, TABLENAME_MYSQL, symbol))
     result = cursor.fetchall()
@@ -114,7 +114,3 @@ def get_marche(symbol: str):
     for res in result:
         data.append(symbol_helper(res))
     return ResponseModel(data, f"symbol = {symbol} received.")
-
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)

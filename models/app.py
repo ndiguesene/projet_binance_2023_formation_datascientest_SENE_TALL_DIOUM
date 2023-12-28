@@ -164,7 +164,6 @@ def create_random_forest_model(link="../botmarche_ok.csv"):
 
 def create_random_forest_model():
     data = getBaseFromMysql()
-    # data = get_data_historical("/server/botmarche_hourly_ok.csv", sep=",")
     data['timestamp'] = pd.to_datetime(data['kline_close_time_parsed']).astype(int) / 10 ** 9
 
     # La moyenne mobile sur une fenêtre de 10 périodes pour la colonne 'close_price'
@@ -218,4 +217,4 @@ def create_random_forest_model():
     home_path = os.getcwd()
     print(home_path + "/opa_cypto_model_rf.joblib")
     dump(model, home_path + "/opa_cypto_model_rf.joblib")
-    return {"score_model": str(accuracy), "path_model_joblid": home_path + "/opa_cypto_model_rf.joblib"}
+    return {"score_model": str(accuracy), "path_model": home_path + "/opa_cypto_model_rf.joblib"}
