@@ -20,7 +20,12 @@ print(URL_ELASTIC)
 client = Client(api_key, api_secret)
 
 # Configuration de la connexion Elasticsearch
-es = Elasticsearch(URL_ELASTIC)  # Port Elasticsearch
+es = Elasticsearch("http://localhost:9200")  # Port Elasticsearch
+print("es")
+print(es.indices.get(index="*"))
+print(es.nodes.info)
+print(es.nodes.stats)
+print(es.cat.indices)
 
 # Récupération des données Kline depuis Binance pour un symbole spécifique et une intervalle de 1 heure
 allSymbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "USDCUSDT", "BNBUSDT"]
@@ -51,5 +56,6 @@ for symbol in allSymbols:
             'number_of_trades': int(kline[8]),
             'is_closed': bool(kline[9])
         })
+
     for doc in data:
         es.index(index=index_name, body=doc)
