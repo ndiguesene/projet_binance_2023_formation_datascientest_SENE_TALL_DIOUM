@@ -1,5 +1,3 @@
-pyspark==3.0.0
 elasticsearch
 requests
 python-binance
-confluent-kafka

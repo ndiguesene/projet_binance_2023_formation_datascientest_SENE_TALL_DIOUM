@@ -20,12 +20,13 @@ print(URL_ELASTIC)
 client = Client(api_key, api_secret)
 
 # Configuration de la connexion Elasticsearch
-es = Elasticsearch("http://localhost:9200")  # Port Elasticsearch
-print("es")
-print(es.indices.get(index="*"))
-print(es.nodes.info)
-print(es.nodes.stats)
-print(es.cat.indices)
+es = Elasticsearch(hosts=['http://localhost:9200/', 'http://elasticsearch:9200/'], verify_certs=False)
+# Nom de l'index Elasticsearch pour les données Binance
+index_name = 'cryptobot'
+# if not es.indices.exists(index=index_name):
+#     es.indices.create(index=index_name)
+#     print("indices créés")
+
 
 # Récupération des données Kline depuis Binance pour un symbole spécifique et une intervalle de 1 heure
 allSymbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "USDCUSDT", "BNBUSDT"]
@@ -33,8 +34,6 @@ allSymbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "USDCUSDT", "BNBUSDT"]
 # klines = client.get_klines(symbol=symbol, interval=Client.KLINE_INTERVAL_1HOUR)
 
 print(allSymbols)
-# Nom de l'index Elasticsearch pour les données Binance
-index_name = 'cryptobot'
 # id,open_price,high_price,low_price,close_price,volume,quote_asset_volume,number_of_trades,kline_open_time_parsed,kline_close_time_parsed,symbol
 # Transformation et indexation des données dans Elasticsearch
 
@@ -52,9 +51,6 @@ for symbol in allSymbols:
             'close_price': float(kline[4]),
             'volume': float(kline[5]),
             'close_time': datetime.datetime.utcfromtimestamp(kline[6] / 1000).strftime('%Y-%m-%d %H:%M:%S'),
-            'quote_asset_volume': float(kline[7]),
-            'number_of_trades': int(kline[8]),
-            'is_closed': bool(kline[9])
         })
 
     for doc in data:

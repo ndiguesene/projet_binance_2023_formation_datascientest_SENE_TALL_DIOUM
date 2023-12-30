@@ -6,8 +6,7 @@ services:
     networks:
       - es_network
     volumes:
-      - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/elasticsearch.yml
-      - esdata:/usr/share/elasticsearch/data
+      - es-data:/usr/share/elasticsearch/data
     healthcheck:
       start_period: 10s
       interval: 10s
@@ -19,13 +18,14 @@ services:
       ES_JAVA_OPTS: "-Xms1g -Xmx1g"
       bootstrap.memory_lock: 'true'
       discovery.type: single-node
-      ELASTIC_PASSWORD: es_pass
+      ELASTIC_PASSWORD: elastic
       xpack.security.enabled: 'false'
-
   kibana:
     image: docker.elastic.co/kibana/kibana:8.3.3
     container_name: kibana
     restart: always
+    networks:
+      - es_network
     healthcheck:
       interval: 10s
       retries: 20
@@ -63,7 +63,7 @@ services:
     environment:
       api_key: '7FipgVGJTbxWEyeyI5wNRyKuQwXXJcRIJBZvvQAxRY1aScVExHzdyQFMh3bLLPT5'
       api_secret: 'tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1'
-      URL_ELASTIC: 'http://localhost:9200'
+      URL_ELASTIC: 'http://elasticsearch:9200'
     networks:
       - es_network
   populate_into_mysql:
@@ -109,5 +109,5 @@ networks:
 volumes:
   db-data:
     name: mysql-data
-  esdata:
-    driver: local
+  es-data:
+    name: es-data
