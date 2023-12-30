@@ -2,7 +2,7 @@ FROM ubuntu:20.04
 
 LABEL maintainer="Orange DE OPA Crypto API"
 
-WORKDIR /server
+WORKDIR /model_api
 
 COPY requirements.txt .
 COPY app.py .

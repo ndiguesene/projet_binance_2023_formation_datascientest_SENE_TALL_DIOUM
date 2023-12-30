@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: populate-elastic-deployment
+spec:
+  replicas: 3  # Nombre de réplicas
+  selector:
+    matchLabels:
+      app: populate-elastic
+  template:
+    metadata:
+      labels:
+        app: populate-elastic
+    spec:
+      containers:
+        - name: populate-elastic
+          image: projet_final/populate_into_elasticsearch:0.0.1
+          env:
+            - name: api_key
+              value: "7FipgVGJTbxWEyeyI5wNRyKuQwXXJcRIJBZvvQAxRY1aScVExHzdyQFMh3bLLPT5"
+            - name: api_secret
+              value: "tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1"
+            - name: URL_ELASTIC
+              value: "http://elasticsearch:9200"
+          # Autres configurations du conteneur
+      # Autres configurations du pod (volumes, réseau, etc.)

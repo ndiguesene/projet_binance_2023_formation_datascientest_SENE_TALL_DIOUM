@@ -29,22 +29,15 @@ def get_all_symbols(client):
     return data
 
 
-# mydb = mysql.connector.connect(host=HOST_MYSQL,
-#                                port=PORT_MYSQL,
-#                                database=BDNAME_MYSQL,
-#                                user=USER_MYSQL,
-#                                password=PASSWORD_MYSQL)
-
-
-def getBaseFromMysql():
+def getConnexionMysql():
     max_attempts = 30
     attempts = 0
     connected = False
     # Cette partie permet d'etre sur que le mysql est ready, parce que
     # Docker ne garantit pas nécessairement l'ordre de démarrage des services, ce qui peut entraîner le démarrage de votre service Python (app) avant que le service de la base de données MySQL (db)
     # ne soit prêt
-    import time
     connection = None
+    import time
 
     while not connected and attempts < max_attempts:
         try:
@@ -59,7 +52,11 @@ def getBaseFromMysql():
             print(f"Attempt {attempts + 1}: MySQL is not ready yet - Error: {err}")
             attempts += 1
             time.sleep(10)
+    return connection
 
+
+def getBaseFromMysql():
+    connection = getConnexionMysql()
     mycursor = connection.cursor()
     mycursor.execute("SELECT * FROM {}.{}".format(BDNAME_MYSQL, TABLENAME_MYSQL))
     myresult = mycursor.fetchall()

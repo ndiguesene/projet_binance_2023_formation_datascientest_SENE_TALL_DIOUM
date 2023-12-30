@@ -1,0 +1,21 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: elastic-data-ingestion-cronjob
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: populate-elastic
+              image: projet_final/populate_into_elasticsearch:0.0.1
+              env:
+                - name: api_key
+                  value: "7FipgVGJTbxWEyeyI5wNRyKuQwXXJcRIJBZvvQAxRY1aScVExHzdyQFMh3bLLPT5"
+                - name: api_secret
+                  value: "tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1"
+                - name: URL_ELASTIC
+                  value: "http://elasticsearch:9200"
+          restartPolicy: OnFailure

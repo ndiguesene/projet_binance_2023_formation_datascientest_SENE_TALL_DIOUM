@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: model-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: example.com  # Remplacez par le nom de domaine ou l'adresse IP associée
+      http:
+        paths:
+          - path: /model  # Le chemin pour accéder à votre service model
+            pathType: Prefix
+            backend:
+              service:
+                name: model-service  # Nom du service à exposer via l'ingress
+                port:
+                  number: 9000  # Port du service
