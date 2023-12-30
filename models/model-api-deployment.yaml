@@ -1,20 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: model-deployment
+  name: model_api-deployment
 spec:
   replicas: 3  # Nombre de répliques souhaitées
   selector:
     matchLabels:
-      app: model
+      app: model_api
   template:
     metadata:
       labels:
-        app: model
+        app: model_api
     spec:
       containers:
         - name: model-container
-          image: projet_final/model:0.0.1
+          image: projet_final/model_api:0.0.1
           ports:
             - containerPort: 9000  # Port sur lequel le service est exposé dans le conteneur
-          # Autres configurations du conteneur si nécessaire
