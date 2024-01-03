@@ -10,7 +10,7 @@ api_secret = os.getenv("api_secret")
 bootstrap_servers = os.getenv("SERVERS")
 topic_name = os.getenv("topic_name")
 
-client = Client(api_key=api_key, api_secret=api_secret, testnet=False)  # Changer testnet à True pour le testnet
+client = Client(api_key=api_key, api_secret=api_secret, testnet=False)
 
 producer = Producer({
     'bootstrap.servers': bootstrap_servers,

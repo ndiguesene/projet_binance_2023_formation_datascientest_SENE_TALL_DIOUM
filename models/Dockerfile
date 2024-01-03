@@ -1,19 +1,26 @@
 FROM ubuntu:20.04
 
-LABEL maintainer="Orange DE OPA Crypto API"
-
 WORKDIR /model_api
 
+# Copy requirements first to leverage Docker's layer caching
 COPY requirements.txt .
-COPY app.py .
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends python3-pip
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application
+COPY app_old.py .
 COPY constant.py .
 COPY server.py .
 
-RUN apt-get update && apt-get upgrade &&  apt-get -y install python3-pip && pip3 install -r requirements.txt && pip3 install mysql-connector-python && pip3 install python-binance && rm -rf /root/.cache
+# Cleanup APT cache
+RUN apt-get clean \
+    && apt-get autoclean \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin
 
 EXPOSE 9000
 
-COPY . .
-# Command to run the API program
-#CMD uvicorn server:server --host 0.0.0.0
+# Command to run the FastAPI server
 CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "9000"]

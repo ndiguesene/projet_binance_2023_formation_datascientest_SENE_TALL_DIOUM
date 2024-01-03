@@ -7,6 +7,6 @@ docker image build . -t projet_final/populate_into_elasticsearch:0.0.1
 cd ./../../models/
 docker image build . -t projet_final/model_api:0.0.1
 
-cd ../up
+cd ./../up
 
 docker-compose up -d

@@ -4,6 +4,7 @@ import datetime
 import os
 
 import mysql.connector
+import pandas as pd
 from binance.client import Client
 
 api_key = os.getenv("api_key")
@@ -15,15 +16,15 @@ PASSWORD_MYSQL = os.getenv("MYSQL_PASSWORD")
 HOST_MYSQL = os.getenv("MYSQL_HOST")
 PORT_MYSQL = os.getenv("MYSQL_PORT")
 
-# HOST_MYSQL='localhost'
-# BDNAME_MYSQL= 'cryptobot'
-# USER_MYSQL= 'root'
-# PASSWORD_MYSQL= 'Password'
-# PORT_MYSQL="3306"
-# #PASSWORD_MYSQL: 'root'
-# TABLENAME_MYSQL= "botmarche"
-# api_key= '7FipgVGJTbxWEyeyI5wNRyKuQwXXJcRIJBZvvQAxRY1aScVExHzdyQFMh3bLLPT5'
-# api_secret= 'tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1'
+# HOST_MYSQL = 'localhost'
+# BDNAME_MYSQL = 'cryptobot'
+# USER_MYSQL = 'root'
+# PASSWORD_MYSQL = 'Password'
+# PORT_MYSQL = "3306"
+# # PASSWORD_MYSQL = 'root'
+# TABLENAME_MYSQL = "botmarche"
+# api_key = '7FipgVGJTbxWEyeyI5wNRyKuQwXXJcRIJBZvvQAxRY1aScVExHzdyQFMh3bLLPT5'
+# api_secret = 'tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1'
 
 client = Client(api_key=api_key, api_secret=api_secret, testnet=True)
 
@@ -54,15 +55,14 @@ def check_mysql_connection_and_get_current_connexion():
     # Docker ne garantit pas nécessairement l'ordre de démarrage des services, ce qui peut entraîner le démarrage de votre service Python (app) avant que le service de la base de données MySQL (db)
     # ne soit prêt
     import time
-    connection = None
+    connection_return = None
 
     while not connected and attempts < max_attempts:
         try:
-            connection = mysql.connector.connect(host=HOST_MYSQL,
-                                                 port=PORT_MYSQL,
-                                                 database=BDNAME_MYSQL,
-                                                 user=USER_MYSQL,
-                                                 password=PASSWORD_MYSQL)
+            connection_return = mysql.connector.connect(host=HOST_MYSQL,
+                                                        port=PORT_MYSQL,
+                                                        user=USER_MYSQL,
+                                                        password=PASSWORD_MYSQL)
             connected = True
             # connection.close()
             print("MySQL is ready!")
@@ -74,41 +74,16 @@ def check_mysql_connection_and_get_current_connexion():
     if not connected:
         print("Failed to connect to MySQL.")
 
-    return connection
+    return connection_return
 
-
-end_date = datetime.datetime.now()
-# On prends une historique de données de 60 jours glissants
-start_date = end_date - datetime.timedelta(days=10)  # 10 days ago
-
-# Convert dates to milliseconds (required by Binance API)
-start_timestamp = int(start_date.timestamp() * 1000)
-end_timestamp = int(end_date.timestamp() * 1000)
-
-data = []
-print("LOG TO GET ALL MARCHES")
-# allSymbols = get_all_symbols(client)
-allSymbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "USDCUSDT", "BNBUSDT"]
-# Fetch historical prices using Binance API
-for symbol in allSymbols:
-    print(symbol)
-    historical_prices = client.get_historical_klines(symbol, Client.KLINE_INTERVAL_1HOUR, start_timestamp,
-                                                     end_timestamp)
-    # :return: list of OHLCV values (Open time, Open, High, Low, Close, Volume, Close time, Quote asset volume, Number of trades, Taker buy base asset volume, Taker buy quote asset volume, Ignore)
-    for price_data in historical_prices:
-        timestampOpen = datetime.datetime.utcfromtimestamp(price_data[0] / 1000).strftime('%Y-%m-%d %H:%M:%S')
-        timestampClose = datetime.datetime.utcfromtimestamp(price_data[6] / 1000).strftime('%Y-%m-%d %H:%M:%S')
-        price_data.pop(0)
-        price_data.pop(5)
-        price_data = price_data[:-3]
-        price_data.extend([timestampOpen, timestampClose, symbol])  # Ajouter les 3 éléments parsed
-        data.append(price_data)
 
 connection = check_mysql_connection_and_get_current_connexion()
-
 db_Info = connection.get_server_info()
 print("Connected to MySQL Server version ", db_Info)
+
 cursor = connection.cursor()
+print(BDNAME_MYSQL)
+print(TABLENAME_MYSQL)
 cursor.execute("CREATE DATABASE IF NOT EXISTS {}".format(BDNAME_MYSQL))
 cursor.execute("DROP TABLE IF EXISTS {}.{}".format(BDNAME_MYSQL, TABLENAME_MYSQL))
 cursor.execute(
@@ -121,15 +96,45 @@ cursor.execute(
                            "volume FLOAT, "
                            "quote_asset_volume FLOAT, "
                            "number_of_trades INT, "
+                           "open_time double, "
                            "kline_open_time_parsed DATETIME,"
+                           "close_time double,"
                            "kline_close_time_parsed DATETIME,"
-                           "symbol VARCHAR(20))")
+                           "symbol VARCHAR(15))")
 
-sql = """INSERT INTO {}.{}(open_price, high_price, low_price,close_price,""" \
-      """volume, quote_asset_volume, number_of_trades, """ \
-      """kline_open_time_parsed, kline_close_time_parsed, symbol) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""".format(
-    BDNAME_MYSQL, TABLENAME_MYSQL)
+end_date = datetime.datetime.now()
+# On prends une historique de données de 60 jours glissants
+start_date = end_date - datetime.timedelta(days=30)  # 30 days ago
 
-cursor.executemany(sql, data)
-connection.commit()
+# Convert dates to milliseconds (required by Binance API)
+start_timestamp = int(start_date.timestamp() * 1000)
+end_timestamp = int(end_date.timestamp() * 1000)
+
+print("LOG TO GET ALL MARCHES")
+allSymbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "USDCUSDT", "BNBUSDT"]
+columns = ['Open Time', 'Open', 'High', 'Low', 'Close', 'Volume', 'Close Time', 'Quote Asset Volume',
+           'Number of Trades', 'Taker Buy Base Asset Volume', 'Taker Buy Quote Asset Volume', 'Ignore']
+# Fetch historical prices using Binance API
+for symbol in allSymbols:
+    print(symbol)
+    historical_prices = client.get_historical_klines(symbol, Client.KLINE_INTERVAL_1HOUR, start_timestamp,
+                                                     end_timestamp)
+    df = pd.DataFrame(historical_prices, columns=columns)
+    # Select specific columns
+    selected_columns = ['Open', 'High', 'Low', 'Close', 'Volume', 'Quote Asset Volume', 'Number of Trades', 'Open Time',
+                        'kline_open_time_parsed',
+                        'Close Time', 'kline_close_time_parsed', 'Symbol']
+    df.loc[:, 'Symbol'] = symbol
+    df['kline_open_time_parsed'] = pd.to_datetime(df['Open Time'], unit='ms')
+    df['kline_close_time_parsed'] = pd.to_datetime(df['Close Time'], unit='ms')
+    selected_df = df[selected_columns]
+    data = [tuple(row) for row in selected_df.to_numpy()]
+    sql = """INSERT INTO {}.{}(open_price, high_price, low_price,close_price,""" \
+          """volume, quote_asset_volume, number_of_trades, """ \
+          """open_time, kline_open_time_parsed, close_time, kline_close_time_parsed, symbol) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""".format(
+        BDNAME_MYSQL, TABLENAME_MYSQL)
+
+    cursor.executemany(sql, data)
+    connection.commit()
+
 print("MySQL connection is closed")

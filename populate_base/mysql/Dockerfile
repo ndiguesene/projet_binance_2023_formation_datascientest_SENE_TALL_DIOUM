@@ -1,19 +1,18 @@
 FROM ubuntu:20.04
 
-LABEL maintainer="Orange DE OPA Crypto"
-
-RUN mkdir /app
-
 WORKDIR /app
 
 COPY constant.py .
 COPY app.py .
+COPY requirements.txt .
 
-RUN apt-get update
-RUN apt-get upgrade
-RUN apt-get -y install python3-pip
-RUN pip3 install mysql-connector-python
-RUN pip3 install python-binance
-RUN rm -rf /root/.cache
+# Update package lists, upgrade packages, install Python3 and pip, clean up
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3-pip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-CMD python3 app.py
+# Install Python dependencies
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+CMD ["python3", "app.py"]

@@ -1,13 +1,14 @@
 FROM ubuntu:20.04
 
-LABEL maintainer="Orange DE OPA Crypto"
-
-RUN mkdir /app_elastic
-
 WORKDIR /app_elastic
 
 COPY app_data_batch_into_elastic.py .
+COPY requirements.txt .
 
-RUN apt-get update && apt-get upgrade && apt-get -y install python3-pip && pip3 install mysql-connector-python && pip3 install python-binance && pip3 install elasticsearch && rm -rf /root/.cache
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-CMD python3 app_data_batch_into_elastic.py
+CMD ["python3", "app_data_batch_into_elastic.py"]
