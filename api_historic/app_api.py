@@ -1,11 +1,9 @@
 import os
 
-import uvicorn
-from fastapi import HTTPException, FastAPI
+from fastapi import FastAPI
 from pydantic import BaseModel
 
-import app as mdl
-from constant import getConnexionMysql, predict
+from constant import BDNAME_MYSQL, TABLENAME_MYSQL, getConnexionMysql
 
 app = FastAPI(title='My API Model')
 
@@ -76,19 +74,29 @@ async def checkStatus():
     return {"status": "OK"}
 
 
-@app.get("/models/train")
-async def train_with_new_data():
-    try:
-        result = mdl.create_all_models()
-        return result
-    except Exception:
-        raise HTTPException(status_code="405", detail="An error occured")
+# @validate
+# Get all marches
+@app.get("/symbols")
+async def get_marches():
+    cursor = mydb.cursor()
+    cursor.execute("SELECT * FROM {}.{}".format(BDNAME_MYSQL, TABLENAME_MYSQL))
+    result = cursor.fetchall()
+    data = []
+    for res in result:
+        data.append(symbol_helper(res))
+    return ResponseModel(data, "All marches received.")
 
 
-@app.get("/predict/v1")
-async def predict_rf_score():
-    data = predict()
-    return data
+# Get an marche by symbol
+@app.get("/symbol/{symbol}")
+async def get_marche(symbol: str):
+    cursor = mydb.cursor()
+    cursor.execute("SELECT * FROM {}.{} WHERE symbol = '{}'".format(BDNAME_MYSQL, TABLENAME_MYSQL, symbol))
+    result = cursor.fetchall()
+    data = []
+    for res in result:
+        data.append(symbol_helper(res))
+    return ResponseModel(data, f"symbol = {symbol} received.")
 
 # if __name__ == "__main__":
-#    uvicorn.run("server:app", host="127.0.0.1", port=9000, log_level="info")
+#     uvicorn.run("app_api:app", host="127.0.0.1", port=8000, log_level="info")

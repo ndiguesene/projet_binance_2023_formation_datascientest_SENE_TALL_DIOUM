@@ -1,3 +1,0 @@
-elasticsearch
-requests
-python-binance

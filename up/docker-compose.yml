@@ -83,15 +83,30 @@ services:
       api_secret: 'tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1'
     networks:
       - db_network
-  model_api:
-    image: projet_final/model_api:0.0.1
-    container_name: model_api
+  model:
+    image: projet_final/model:0.0.1
+    container_name: model
     depends_on:
       - populate_into_mysql
     ports:
       - "9000:9000"
     networks:
       - db_network
+    environment:
+      api_key: '7FipgVGJTbxWEyeyI5wNRyKuQwXXJcRIJBZvvQAxRY1aScVExHzdyQFMh3bLLPT5'
+      api_secret: 'tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1'
+  api_historic:
+    image: projet_final/api_historic:0.0.1
+    container_name: api_historic
+    depends_on:
+      - populate_into_mysql
+    ports:
+      - "8000:8000"
+    networks:
+      - db_network
+    environment:
+      api_key: '7FipgVGJTbxWEyeyI5wNRyKuQwXXJcRIJBZvvQAxRY1aScVExHzdyQFMh3bLLPT5'
+      api_secret: 'tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1'
 networks:
   db_network:
     name: mysql_net

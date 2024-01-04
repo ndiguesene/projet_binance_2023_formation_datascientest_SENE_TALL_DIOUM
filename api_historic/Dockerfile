@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 
-WORKDIR /model
+WORKDIR /app_historic
 
 # Copy requirements first to leverage Docker's layer caching
 COPY requirements.txt .
@@ -10,9 +10,9 @@ RUN apt-get update \
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application
-COPY app.py .
+COPY app_api.py .
 COPY constant.py .
-COPY server.py .
+COPY requirements.txt .
 
 # Cleanup APT cache
 RUN apt-get clean \
@@ -20,7 +20,7 @@ RUN apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin
 
-EXPOSE 9000
+EXPOSE 8000
 
 # Command to run the FastAPI server
-CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "9000"]
+CMD ["uvicorn", "app_api:app", "--host", "0.0.0.0", "--port", "8000"]

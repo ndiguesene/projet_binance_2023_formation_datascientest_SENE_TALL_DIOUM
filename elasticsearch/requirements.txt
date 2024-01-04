@@ -1,5 +1,10 @@
+elasticsearch
 requests
+python-binance
+numpy
+pandas
+joblib
 python-binance
 mysql-connector-python
 mysql.connector
-pandas
+scikit-learn

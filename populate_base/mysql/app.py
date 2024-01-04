@@ -1,5 +1,3 @@
-# installation du package python-binance
-# pip3 install python-binance
 import datetime
 import os
 
@@ -77,13 +75,13 @@ def check_mysql_connection_and_get_current_connexion():
     return connection_return
 
 
+print("BDNAME_MYSQL", BDNAME_MYSQL)
+print("TABLENAME_MYSQL", TABLENAME_MYSQL)
 connection = check_mysql_connection_and_get_current_connexion()
 db_Info = connection.get_server_info()
 print("Connected to MySQL Server version ", db_Info)
 
 cursor = connection.cursor()
-print(BDNAME_MYSQL)
-print(TABLENAME_MYSQL)
 cursor.execute("CREATE DATABASE IF NOT EXISTS {}".format(BDNAME_MYSQL))
 cursor.execute("DROP TABLE IF EXISTS {}.{}".format(BDNAME_MYSQL, TABLENAME_MYSQL))
 cursor.execute(
