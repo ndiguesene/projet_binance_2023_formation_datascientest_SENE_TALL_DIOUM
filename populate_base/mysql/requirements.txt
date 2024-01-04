@@ -1,5 +1,5 @@
 requests
 python-binance
-mysql-connector-python
-mysql.connector
 pandas
+mysql-connector-python==8.0.5
+mysql.connector==2.2.9

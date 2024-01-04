@@ -13,7 +13,7 @@ services:
       retries: 20
       test: curl --user "elastic:elastic" -s http://localhost:9200/_cluster/health | grep -vq '"status":"red"'
     ports:
-      - 9200:9200
+      - "9200:9200"
     environment:
       ES_JAVA_OPTS: "-Xms1g -Xmx1g"
       bootstrap.memory_lock: 'true'
@@ -33,7 +33,7 @@ services:
     depends_on:
       - elasticsearch
     ports:
-      - 5601:5601
+      - "5601:5601"
     environment:
       NEWSFEED_ENABLED: 'false'
       TELEMETRY_OPTIN: 'false'
@@ -42,7 +42,7 @@ services:
       KIBANA_AUTOCOMPLETETIMEOUT: 3000
       KIBANA_AUTOCOMPLETETERMINATEAFTER: 2500000
   db:
-    image: mysql:latest
+    image: mysql:8.0.2
     container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: 'root'
@@ -51,21 +51,11 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
     ports:
       - "3306:3306"
+      - "33060:33060"
     volumes:
       - db-data:/data/db
     networks:
       - db_network
-  populate_into_elastic:
-    image: projet_final/populate_into_elasticsearch:0.0.1
-    container_name: populate_into_elasticsearch
-    depends_on:
-      - elasticsearch
-    environment:
-      api_key: '7FipgVGJTbxWEyeyI5wNRyKuQwXXJcRIJBZvvQAxRY1aScVExHzdyQFMh3bLLPT5'
-      api_secret: 'tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1'
-      URL_ELASTIC: 'http://elasticsearch:9200/'
-    networks:
-      - es_network
   populate_into_mysql:
     image: projet_final/populate_into_mysql:0.0.1
     container_name: populate_into_mysql
@@ -83,6 +73,17 @@ services:
       api_secret: 'tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1'
     networks:
       - db_network
+  populate_into_elastic:
+    image: projet_final/populate_into_elasticsearch:0.0.1
+    container_name: populate_into_elasticsearch
+    depends_on:
+      - elasticsearch
+    environment:
+      api_key: '7FipgVGJTbxWEyeyI5wNRyKuQwXXJcRIJBZvvQAxRY1aScVExHzdyQFMh3bLLPT5'
+      api_secret: 'tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1'
+      URL_ELASTIC: 'http://localhost:9200/'
+    networks:
+      - es_network
   model:
     image: projet_final/model:0.0.1
     container_name: model

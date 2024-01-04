@@ -27,7 +27,8 @@ def check_elasticsearch_instance(url):
                 health_data = response.json()
                 # # Vérifier l'état de santé (par exemple, si l'état est 'green')
                 if health_data['status'] == 'green':
-                    client_es = Elasticsearch(hosts=[url, 'http://elasticsearch:9200/'], verify_certs=False)
+                    # client_es = Elasticsearch(hosts=[url, 'http://elasticsearch:9200/'], verify_certs=False)
+                    client_es = Elasticsearch(hosts=[url], verify_certs=False)
                     connected = True
                     print("Elasticsearch is healthy GREEN !")
                 else:

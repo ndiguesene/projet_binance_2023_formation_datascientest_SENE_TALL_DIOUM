@@ -7,6 +7,7 @@ from binance.client import Client
 
 api_key = os.getenv("api_key")
 api_secret = os.getenv("api_secret")
+
 BDNAME_MYSQL = os.getenv("MYSQL_DATABASE")
 TABLENAME_MYSQL = os.getenv("MYSQL_TABLENAME")
 USER_MYSQL = os.getenv("MYSQL_USER")
@@ -50,33 +51,34 @@ def check_mysql_connection_and_get_current_connexion():
     attempts = 0
     connected = False
     # Cette partie permet d'etre sur que le mysql est ready, parce que
-    # Docker ne garantit pas nécessairement l'ordre de démarrage des services, ce qui peut entraîner le démarrage de votre service Python (app) avant que le service de la base de données MySQL (db)
+    # Docker ne garantit pas nécessairement l'ordre de démarrage des services, ce qui peut entraîner le démarrage de votre service Python (app)
+    # avant que le service de la base de données MySQL (db)
     # ne soit prêt
     import time
     connection_return = None
-
     while not connected and attempts < max_attempts:
         try:
+            print(f"Attempting to connect to MySQL: attempt {attempts + 1}")
+            print(HOST_MYSQL)
+            print(PORT_MYSQL)
+            print(BDNAME_MYSQL)
+            print(USER_MYSQL)
+            print(PASSWORD_MYSQL)
             connection_return = mysql.connector.connect(host=HOST_MYSQL,
                                                         port=PORT_MYSQL,
+                                                        database=BDNAME_MYSQL,
                                                         user=USER_MYSQL,
                                                         password=PASSWORD_MYSQL)
             connected = True
-            # connection.close()
             print("MySQL is ready!")
         except mysql.connector.Error as err:
             print(f"Attempt {attempts + 1}: MySQL is not ready yet - Error: {err}")
             attempts += 1
             time.sleep(10)
 
-    if not connected:
-        print("Failed to connect to MySQL.")
-
     return connection_return
 
 
-print("BDNAME_MYSQL", BDNAME_MYSQL)
-print("TABLENAME_MYSQL", TABLENAME_MYSQL)
 connection = check_mysql_connection_and_get_current_connexion()
 db_Info = connection.get_server_info()
 print("Connected to MySQL Server version ", db_Info)
@@ -123,8 +125,13 @@ for symbol in allSymbols:
                         'kline_open_time_parsed',
                         'Close Time', 'kline_close_time_parsed', 'Symbol']
     df.loc[:, 'Symbol'] = symbol
-    df['kline_open_time_parsed'] = pd.to_datetime(df['Open Time'], unit='ms')
-    df['kline_close_time_parsed'] = pd.to_datetime(df['Close Time'], unit='ms')
+    # df['kline_open_time_parsed'] = pd.to_datetime(df['Open Time'], unit='ms')
+    # df['kline_close_time_parsed'] = pd.to_datetime(df['Close Time'], unit='ms')
+    df['kline_open_time_parsed'] = df['Open Time'].apply(
+        lambda x: datetime.datetime.fromtimestamp(x / 1000).strftime('%Y-%m-%d %H:%M:%S'))
+    df['kline_close_time_parsed'] = df['Close Time'].apply(
+        lambda x: datetime.datetime.fromtimestamp(x / 1000).strftime('%Y-%m-%d %H:%M:%S'))
+
     selected_df = df[selected_columns]
     data = [tuple(row) for row in selected_df.to_numpy()]
     sql = """INSERT INTO {}.{}(open_price, high_price, low_price,close_price,""" \
