@@ -18,20 +18,20 @@ URL_ELASTIC = "http://54.195.84.110:9200"
 INDEX_ELASTIC = "cryptobot"
 
 # MYSQL
-HOST_MYSQL = "db"
-PORT_MYSQL = "3306"
-BDNAME_MYSQL = "cryptobot"
-TABLENAME_MYSQL = "botmarche"
-USER_MYSQL = "root"
-PASSWORD_MYSQL = "root"
-
-
-# HOST_MYSQL = 'localhost'
-# BDNAME_MYSQL = 'cryptobot'
-# USER_MYSQL = 'root'
-# PASSWORD_MYSQL = 'Password'
+# HOST_MYSQL = "db"
 # PORT_MYSQL = "3306"
+# BDNAME_MYSQL = "cryptobot"
 # TABLENAME_MYSQL = "botmarche"
+# USER_MYSQL = "root"
+# PASSWORD_MYSQL = "root"
+
+
+HOST_MYSQL = 'localhost'
+BDNAME_MYSQL = 'cryptobot'
+USER_MYSQL = 'root'
+PASSWORD_MYSQL = 'Password'
+PORT_MYSQL = "3306"
+TABLENAME_MYSQL = "botmarche"
 
 
 def get_models(model_name, symbol):

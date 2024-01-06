@@ -8,8 +8,8 @@ from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 
 # Parametres externalisés
 
-#api_key = '7FipgVGJTbxWEyeyI5wNRyKuQwXXJcRIJBZvvQAxRY1aScVExHzdyQFMh3bLLPT5'
-#api_secret = 'tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1'
+# api_key = '7FipgVGJTbxWEyeyI5wNRyKuQwXXJcRIJBZvvQAxRY1aScVExHzdyQFMh3bLLPT5'
+# api_secret = 'tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1'
 
 # ELASTIC
 # URL_ELASTIC = "http://54.195.84.110:9200"
@@ -114,3 +114,4 @@ def predict(api_key, api_secret):
 
         prediction = model_rf.predict(X).tolist()
         data.append({"prediction": prediction, "symbol": symbol})
+    return data
