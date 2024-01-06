@@ -31,7 +31,9 @@ class MarcheSchema(BaseModel):
     volume: int
     quote_asset_volume: float
     number_of_trades: int
+    open_time: str
     kline_open_time_parsed: str
+    close_time: str
     kline_close_time_parsed: str
     symbol: str
 
@@ -46,9 +48,11 @@ def symbol_helper(symbol) -> dict:
         "volume": float(symbol[5]),
         "quote_asset_volume": str(symbol[6]),
         "number_of_trades": str(symbol[7]),
-        "kline_open_time_parsed": str(symbol[8]),
-        "kline_close_time_parsed": str(symbol[9]),
-        "symbol": str(symbol[10])
+        "open_time": str(symbol[8]),
+        "kline_open_time_parsed": str(symbol[9]),
+        "close_time": str(symbol[10]),
+        "kline_close_time_parsed": str(symbol[11]),
+        "symbol": str(symbol[12])
     }
 
 

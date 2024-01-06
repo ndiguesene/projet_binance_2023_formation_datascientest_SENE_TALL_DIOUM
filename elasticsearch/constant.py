@@ -51,7 +51,7 @@ def preprocess_data(X_train):
     return X_train
 
 
-def predict():
+def predict(api_key, api_secret):
     symbols_to_filter = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "USDCUSDT", "BNBUSDT"]
     data = []
     for symbol in symbols_to_filter:

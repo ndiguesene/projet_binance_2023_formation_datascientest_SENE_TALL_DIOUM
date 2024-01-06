@@ -48,12 +48,13 @@ def check_elasticsearch_instance(url):
 # URL_ELASTIC = 'http://localhost:9200/'
 
 # Configuration de la connexion Elasticsearch
+print("URL_ELASTIC")
+print(URL_ELASTIC)
 es = check_elasticsearch_instance(URL_ELASTIC)
 # Initialisation du client Binance
 # client = Client(api_key, api_secret)
-
 # Nom de l'index Elasticsearch pour les données Binance
 index_name = 'cryptobot'
 
-data = predict()
+data = predict(api_key, api_secret)
 es.index(index=index_name, body=data)

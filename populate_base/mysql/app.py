@@ -59,11 +59,6 @@ def check_mysql_connection_and_get_current_connexion():
     while not connected and attempts < max_attempts:
         try:
             print(f"Attempting to connect to MySQL: attempt {attempts + 1}")
-            print(HOST_MYSQL)
-            print(PORT_MYSQL)
-            print(BDNAME_MYSQL)
-            print(USER_MYSQL)
-            print(PASSWORD_MYSQL)
             connection_return = mysql.connector.connect(host=HOST_MYSQL,
                                                         port=PORT_MYSQL,
                                                         database=BDNAME_MYSQL,

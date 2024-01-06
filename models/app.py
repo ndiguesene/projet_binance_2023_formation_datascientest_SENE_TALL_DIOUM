@@ -169,10 +169,9 @@ def create_all_models():
             }
 
             for model_name, model in models.items():
-
                 # Entraînement du modèle
-                print(X_train_resampled)
-                print(X_train_resampled.columns)
+                # print(X_train_resampled)
+                # print(X_train_resampled.columns)
                 model.fit(X_train_resampled, y_train_resampled)
 
                 # Prédictions
@@ -205,11 +204,11 @@ def create_all_models():
             continue
 
     # Calcul de la moyenne globale pour chaque modèle
-    for model_name, metrics in results.items():
-        print(f"\n{model_name} - Global Average Metrics")
-        print(f"Accuracy: {np.mean(metrics['accuracy'])}")
-        print(f"Precision: {np.mean(metrics['precision'])}")
-        print(f"Recall: {np.mean(metrics['recall'])}")
-        print(f"F1-score: {np.mean(metrics['f1-score'])}")
+    # for model_name, metrics in results.items():
+    #     print(f"\n{model_name} - Global Average Metrics")
+    #     print(f"Accuracy: {np.mean(metrics['accuracy'])}")
+    #     print(f"Precision: {np.mean(metrics['precision'])}")
+    #     print(f"Recall: {np.mean(metrics['recall'])}")
+    #     print(f"F1-score: {np.mean(metrics['f1-score'])}")
 
     return {"results": results.items()}

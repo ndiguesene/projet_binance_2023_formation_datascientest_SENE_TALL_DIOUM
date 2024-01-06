@@ -1,17 +1,18 @@
 version: "3.9"
 services:
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.3.3
+    #image: docker.elastic.co/elasticsearch/elasticsearch:8.3.3
+    image: elasticsearch:8.11.3
     container_name: elasticsearch
     networks:
-      - es_network
+      - db_network
     volumes:
       - es-data:/usr/share/elasticsearch/data
-    healthcheck:
-      start_period: 10s
-      interval: 10s
-      retries: 20
-      test: curl --user "elastic:elastic" -s http://localhost:9200/_cluster/health | grep -vq '"status":"red"'
+    #    healthcheck:
+    #      start_period: 10s
+    #      interval: 10s
+    #      retries: 20
+    #      test: curl --user "elastic:elastic" -s http://elasticsearch:9200/_cluster/health | grep -vq '"status":"red"'
     ports:
       - "9200:9200"
     environment:
@@ -21,11 +22,12 @@ services:
       ELASTIC_PASSWORD: elastic
       xpack.security.enabled: 'false'
   kibana:
-    image: docker.elastic.co/kibana/kibana:8.3.3
+    #image: docker.elastic.co/kibana/kibana:8.3.3
+    image: kibana:8.11.3
     container_name: kibana
     restart: always
     networks:
-      - es_network
+      - db_network
     healthcheck:
       interval: 10s
       retries: 20
@@ -51,7 +53,6 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
     ports:
       - "3306:3306"
-      - "33060:33060"
     volumes:
       - db-data:/data/db
     networks:
@@ -81,9 +82,9 @@ services:
     environment:
       api_key: '7FipgVGJTbxWEyeyI5wNRyKuQwXXJcRIJBZvvQAxRY1aScVExHzdyQFMh3bLLPT5'
       api_secret: 'tnlNDg4WOt0xungysd7fAZAVKyBqqOzcgQW8MYebVo1piJzfeUC1mYkcDgJSm4T1'
-      URL_ELASTIC: 'http://localhost:9200/'
+      URL_ELASTIC: 'http://elasticsearch:9200/'
     networks:
-      - es_network
+      - db_network
   model:
     image: projet_final/model:0.0.1
     container_name: model
@@ -111,8 +112,6 @@ services:
 networks:
   db_network:
     name: mysql_net
-  es_network:
-    name: elastic_net
 volumes:
   db-data:
     name: mysql-data
