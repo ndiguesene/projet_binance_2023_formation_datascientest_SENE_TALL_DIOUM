@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 import mysql.connector
 import numpy as np
@@ -96,8 +97,7 @@ def getBaseFromMysql():
     return data_frame
 
 
-def predict():
-    symbols_to_filter = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "USDCUSDT", "BNBUSDT"]
+def predict(symbols_to_filter, api_key, api_secret):
     data = []
     for symbol in symbols_to_filter:
         client = Client(api_key=api_key, api_secret=api_secret, testnet=True)
@@ -148,14 +148,38 @@ def predict():
         df['day_of_week'] = df['open_time'].dt.dayofweek
         df['month'] = df['open_time'].dt.month
         df.sort_values(by=['symbol', 'open_time'], inplace=True)
-        df = df.drop(['open_time', 'close_time', 'high_price', 'low_price', 'achat_vente'], axis=1)
+        df = df.drop(['open_time', 'close_time', 'high_price', 'low_price'], axis=1)
 
         df = pd.get_dummies(df, columns=['hour', 'day_of_week', 'month'])
-        X = preprocess_data(df)
+
+        X = preprocess_data(df.drop("achat_vente", axis=1))
+        # Prédictions pour la prochaine heure
+        # last_hour_data = X_test.iloc[-1, :].copy()
+        last_hour_data = X.iloc[-1, :].copy()
+        #
+        # Trouver la colonne "hour_x" correspondant à l'heure actuelle
+        current_hour_column = [col for col in last_hour_data.index if col.startswith('hour_')][0]
+        #
+        # Réinitialiser toutes les colonnes "hour_x" à zéro
+        last_hour_data[[col for col in last_hour_data.index if col.startswith('hour_')]] = 0
+        # # Marquer la nouvelle heure pour la prochaine prédiction
+        next_hour = int(current_hour_column.split('_')[1]) + 1
+        next_hour_column = f'hour_{next_hour}' if next_hour <= 23 else 'hour_0'
+        last_hour_data[next_hour_column] = 1
+        last_hour_data = last_hour_data.values.reshape(1, -1)
 
         # load models from disk
-        models = get_models(model_name='XGBoost', symbol=symbol)
+        models = get_models(model_name='XGBClassifier', symbol=symbol)
         model_rf = models['model_xgb']
+        prediction = model_rf.predict(last_hour_data).tolist()
+        maintenant = datetime.now()
+        data.append(
+            {
+                "prediction_next_hour": prediction[0],
+                "symbol": symbol,
+                "day": maintenant.strftime("%Y-%m-%d"),
+                "heure": maintenant.strftime("%H")
+            }
+        )
 
-        prediction = model_rf.predict(X).tolist()
-        data.append({"prediction": prediction, "symbol": symbol})
+    return data

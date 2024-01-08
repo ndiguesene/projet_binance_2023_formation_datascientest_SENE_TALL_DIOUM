@@ -80,10 +80,10 @@ async def checkStatus():
 
 # @validate
 # Get all marches
-@app.get("/symbols")
-async def get_marches():
+@app.get("/symbols/{n}")
+async def get_marches(n: int):
     cursor = mydb.cursor()
-    cursor.execute("SELECT * FROM {}.{}".format(BDNAME_MYSQL, TABLENAME_MYSQL))
+    cursor.execute("SELECT * FROM {}.{} limit {}".format(BDNAME_MYSQL, TABLENAME_MYSQL, n))
     result = cursor.fetchall()
     data = []
     for res in result:
@@ -92,10 +92,10 @@ async def get_marches():
 
 
 # Get an marche by symbol
-@app.get("/symbol/{symbol}")
-async def get_marche(symbol: str):
+@app.get("/symbol/{symbol}/{n}")
+async def get_marche(symbol: str, n: int):
     cursor = mydb.cursor()
-    cursor.execute("SELECT * FROM {}.{} WHERE symbol = '{}'".format(BDNAME_MYSQL, TABLENAME_MYSQL, symbol))
+    cursor.execute("SELECT * FROM {}.{} WHERE symbol = '{}' limit {}".format(BDNAME_MYSQL, TABLENAME_MYSQL, symbol, n))
     result = cursor.fetchall()
     data = []
     for res in result:

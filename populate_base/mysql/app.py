@@ -120,8 +120,6 @@ for symbol in allSymbols:
                         'kline_open_time_parsed',
                         'Close Time', 'kline_close_time_parsed', 'Symbol']
     df.loc[:, 'Symbol'] = symbol
-    # df['kline_open_time_parsed'] = pd.to_datetime(df['Open Time'], unit='ms')
-    # df['kline_close_time_parsed'] = pd.to_datetime(df['Close Time'], unit='ms')
     df['kline_open_time_parsed'] = df['Open Time'].apply(
         lambda x: datetime.datetime.fromtimestamp(x / 1000).strftime('%Y-%m-%d %H:%M:%S'))
     df['kline_close_time_parsed'] = df['Close Time'].apply(

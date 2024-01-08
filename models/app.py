@@ -5,9 +5,6 @@ import numpy as np
 import pandas as pd
 from imblearn.over_sampling import SMOTE
 from joblib import dump
-from sklearn import svm
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
-from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
@@ -91,13 +88,11 @@ def smote_sampling(X_symbol, y_symbol):
     return X_train_resampled, y_train_resampled
 
 
-def create_all_models():
+def create_all_models(symbols_to_filter):
     df = getBaseFromMysql()
     column_names = ['open_price', 'high_price', 'low_price', 'close_price', 'volume', 'quote_asset_volume',
                     'number_of_trades', 'open_time', 'close_time', 'symbol']
     df = df[column_names]
-
-    symbols_to_filter = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "USDCUSDT", "BNBUSDT"]
     df = df[df['symbol'].isin(symbols_to_filter)]
     df.sort_values(by=['symbol', 'open_time'], inplace=True)
 
@@ -137,13 +132,14 @@ def create_all_models():
 
     df = pd.get_dummies(df, columns=['hour', 'day_of_week', 'month'])
 
-    # Récupération des symboles uniques dans le dataset
-    symbols = df['symbol'].unique()
+    current_hour_column = [col for col in df.columns if col.startswith('hour_')][0]
+    next_hour = int(current_hour_column.split('_')[1]) + 1
+    next_hour_column = f'hour_{next_hour}' if next_hour <= 23 else 'hour_0'
+    df[next_hour_column] = 1
 
-    # Initialisation des résultats pour chaque modèle
     results = {}
 
-    for symbol in symbols:
+    for symbol in symbols_to_filter:
         try:
             symbol_data = df[df['symbol'] == symbol]
 
@@ -155,23 +151,12 @@ def create_all_models():
 
             # Suréchantillonnage
             X_train_resampled, y_train_resampled = smote_sampling(X_train, y_train)
-
-            # Construction des modèles
-            # models = {
-            #     'XGBoost': XGBClassifier(random_state=42),
-            # }
             models = {
-                'Logistic_Regression': LogisticRegression(random_state=42),
-                'Random_Forest': RandomForestClassifier(random_state=42),
-                'Gradient_Boosting': GradientBoostingClassifier(learning_rate=0.01, n_estimators=50, random_state=42),
-                'XGBoost': XGBClassifier(random_state=42),
-                'SVM': svm.SVC()
+                'XGBClassifier': XGBClassifier(random_state=42),
             }
-
             for model_name, model in models.items():
+
                 # Entraînement du modèle
-                # print(X_train_resampled)
-                # print(X_train_resampled.columns)
                 model.fit(X_train_resampled, y_train_resampled)
 
                 # Prédictions
@@ -196,19 +181,7 @@ def create_all_models():
                 results[model_name]['f1-score'].append(report['macro avg']['f1-score'])
 
                 home_path = os.getcwd()
-                print(home_path + "/opa_cypto_" + model_name + "_" + symbol + ".joblib")
                 dump(model, home_path + "/opa_cypto_" + model_name + "_" + symbol + ".joblib")
-
-
         except ValueError as e:
             continue
-
-    # Calcul de la moyenne globale pour chaque modèle
-    # for model_name, metrics in results.items():
-    #     print(f"\n{model_name} - Global Average Metrics")
-    #     print(f"Accuracy: {np.mean(metrics['accuracy'])}")
-    #     print(f"Precision: {np.mean(metrics['precision'])}")
-    #     print(f"Recall: {np.mean(metrics['recall'])}")
-    #     print(f"F1-score: {np.mean(metrics['f1-score'])}")
-
-    return {"results": results.items()}
+    return results

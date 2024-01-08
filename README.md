@@ -80,8 +80,6 @@ le marché financier et pouvoir construire un modèle ML performant.
 11. symbol : La paire de trading associée aux données, indiquant quelles cryptomonnaies sont échangées l'une contre l'autre. Par exemple, dans la paire BTC/USDT, BTC est la devise de base et USDT est la devise de cotation
 
 
-
-
 ##### 2-  Architecture des Données avec MySQL
 
 Une fois les données collectées, la deuxième étape consistera à concevoir 
@@ -118,6 +116,22 @@ Lancer les différentes images et conteneurs et puis l'exécuter:
 > > chmod +x setup.sh    
 > > sh setup.sh  
 
+Vous pouvez tester et consulter la documentation de l'API sur http://0.0.0.0:8000/docs après lancement.  
+Il vous faut au préalable créer un tunel ssh entre l'API et le port 8000 de votre machine.  Un exemple ci-après.
+
+>> ssh -i "data_enginering_machine.pem" ubuntu@3.251.80.227 -fNL 8000:192.168.49.2:80
+
+Et donc par la suite l'api s'ouvre sur le navigateur sur l'adresse  localhost:8000/docs.  
+`Nota`: L'utilisation de l'API se fait par corps de requête
+
+#### Routes
+
+###### Lire `n` documents de la collection
+>> curl -X 'GET' \
+  'http://localhost:8000/symbols \
+  -H 'accept: application/json'
+
+Réponse de l'api :
 
 ###### 3- Consommation de la Donnée avec le Modèle de Machine Learning et Stockage dans Elasticsearch
 

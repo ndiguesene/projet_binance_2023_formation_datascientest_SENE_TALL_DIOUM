@@ -1,6 +1,5 @@
 import os
 import time
-from datetime import datetime
 
 import requests
 from elasticsearch import Elasticsearch
@@ -49,18 +48,14 @@ def check_elasticsearch_instance(url):
 # URL_ELASTIC = 'http://localhost:9200/'
 
 # Configuration de la connexion Elasticsearch
-print("URL_ELASTIC")
-print(URL_ELASTIC)
 es = check_elasticsearch_instance(URL_ELASTIC)
 # Initialisation du client Binance
 # client = Client(api_key, api_secret)
 # Nom de l'index Elasticsearch pour les données Binance
 index_name = 'cryptobot'
-
-data = predict(api_key, api_secret)
+symbols_to_filter = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "USDCUSDT", "BNBUSDT"]
+# data = predict(es, api_key, api_secret, index_name)
+data = predict(symbols_to_filter, api_key, api_secret)
 # print(data)
 for d_predict in data:
-    current_time = datetime.now().isoformat()
-    d_predict["datetime"] = current_time[:10]
-    d_predict["heure"] = current_time[11:19]
-    es.index(index=index_name, body=d_predict)
+    es.index(index=index_name + '_predict', body=d_predict)

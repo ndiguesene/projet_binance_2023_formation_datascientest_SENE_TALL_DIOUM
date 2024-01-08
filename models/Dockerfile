@@ -14,6 +14,12 @@ COPY app.py .
 COPY constant.py .
 COPY server.py .
 
+COPY opa_cypto_XGBClassifier_BTCUSDT.joblib .
+COPY opa_cypto_XGBClassifier_ETHUSDT.joblib .
+COPY opa_cypto_XGBClassifier_SOLUSDT.joblib .
+COPY opa_cypto_XGBClassifier_USDCUSDT.joblib .
+COPY opa_cypto_XGBClassifier_BNBUSDT.joblib .
+
 # Cleanup APT cache
 RUN apt-get clean \
     && apt-get autoclean \

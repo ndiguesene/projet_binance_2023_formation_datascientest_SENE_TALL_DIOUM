@@ -6,11 +6,11 @@ COPY ingest_prediction_into_elastic.py .
 COPY constant.py .
 COPY requirements.txt .
 
-COPY opa_cypto_XGBoost_BTCUSDT.joblib .
-COPY opa_cypto_XGBoost_ETHUSDT.joblib .
-COPY opa_cypto_XGBoost_SOLUSDT.joblib .
-COPY opa_cypto_XGBoost_USDCUSDT.joblib .
-COPY opa_cypto_XGBoost_BNBUSDT.joblib .
+COPY opa_cypto_XGBClassifier_BNBUSDT.joblib .
+COPY opa_cypto_XGBClassifier_BTCUSDT.joblib .
+COPY opa_cypto_XGBClassifier_ETHUSDT.joblib .
+COPY opa_cypto_XGBClassifier_SOLUSDT.joblib .
+COPY opa_cypto_XGBClassifier_USDCUSDT.joblib .
 
 RUN apt-get update \
     && apt-get upgrade -y \

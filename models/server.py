@@ -1,6 +1,5 @@
 import os
 
-import uvicorn
 from fastapi import HTTPException, FastAPI
 from pydantic import BaseModel
 
@@ -79,7 +78,7 @@ async def checkStatus():
 @app.get("/models/train")
 async def train_with_new_data():
     try:
-        result = mdl.create_all_models()
+        result = mdl.create_all_models(symbols_to_filter=["BTCUSDT", "ETHUSDT", "SOLUSDT", "USDCUSDT", "BNBUSDT"])
         return result
     except Exception:
         raise HTTPException(status_code="405", detail="An error occured")
@@ -87,8 +86,9 @@ async def train_with_new_data():
 
 @app.get("/predict/v1")
 async def predict_rf_score():
-    data = predict()
+    data = predict(symbols_to_filter=["BTCUSDT", "ETHUSDT", "SOLUSDT", "USDCUSDT", "BNBUSDT"], api_key=api_key,
+                   api_secret=api_secret)
     return data
 
 # if __name__ == "__main__":
-#    uvicorn.run("server:app", host="127.0.0.1", port=9000, log_level="info")
+#     uvicorn.run("server:app", host="127.0.0.1", port=9000, log_level="info")

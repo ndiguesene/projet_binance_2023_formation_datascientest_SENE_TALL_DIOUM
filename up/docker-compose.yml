@@ -90,6 +90,7 @@ services:
     container_name: model
     depends_on:
       - populate_into_mysql
+      - populate_into_elastic
     ports:
       - "9000:9000"
     networks:
